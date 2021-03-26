@@ -1,0 +1,34 @@
+{
+  "name": "spidergl",
+  "version": "0.2.0",
+  "description": "SpiderGL Computer Graphics Library",
+  "main": "spidergl.js",
+  "directories": {
+    "doc": "doc",
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XyoloJR/SpiderGL.git"
+  },
+  "keywords": [
+    "webgl",
+    "3D",
+    "engine",
+    "js",
+    "javascript"
+  ],
+  "author": "Marco Di Benedetto - Visual Computing Lab, ISTI - CNR",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/XyoloJR/SpiderGL/issues"
+  },
+  "homepage": "https://github.com/XyoloJR/SpiderGL#readme",
+  "devDependencies": {
+    "eslint": "^7.22.0"
+  }
+}
