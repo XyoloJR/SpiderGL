@@ -42,7 +42,7 @@ SpiderGL.DOM = { };
  *
  * The returned element object is retrieved by a direct call to document.getElementById(id).
  *
- * @param {string} id The element id.
+ * @param {string} elementId The element id.
  * @return {Element} The document element.
  */
 SpiderGL.DOM.getElementById = function (elementId) {
@@ -54,17 +54,17 @@ SpiderGL.DOM.getElementById = function (elementId) {
  *
  * The returned text is retrieved by concatenating the text content of internal element nodes.
  *
- * @param {string} id The element id.
- * @return {string} The text contained in the document element.
+ * @param {string} elementId The element id.
+ * @return {string | null} The text contained in the document element.
  */
 SpiderGL.DOM.getElementText = function (elementId) {
-	var elem = document.getElementById(elementId);
+	let elem = document.getElementById(elementId);
 	if (!elem) return null;
 
-	var str = "";
+	let str = "";
 	elem = elem.firstChild;
 	while (elem) {
-		if (elem.nodeType == 3) {
+		if (elem.nodeType === 3) {
 			str += elem.textContent;
 		}
 		elem = elem.nextSibling;
