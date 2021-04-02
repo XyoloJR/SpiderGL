@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * The SpiderGL.WebGL namespace.
  *
  * @namespace The SpiderGL.WebGL namespace.
- * 
+ *
  * The SpiderGL.WebGL namespace gives access to WebGL functionalities in terms of context creation and enhancement, and object wrappers.
  * The main purpose of the module is to provide a robust and intuitive way of dealing with all native WebGL objects (e.g., textures, framebuffers, etc.).
  * Each specialized wrapper handles creation/destruction, edit operations (i.e. parameter settings), and binding of the underlying native WebGL object (the GL handle).
@@ -109,17 +109,16 @@ SpiderGL.WebGL.Context.DEFAULT_UNPACK_COLORSPACE_CONVERSION = WebGLRenderingCont
  * @see SpiderGL.WebGL.Context.getHijacked
  */
 SpiderGL.WebGL.Context.get = function (canvas, args) {
-	var c = canvas;
+	let c = canvas;
 	if (SpiderGL.Type.isString(c)) { c = SpiderGL.DOM.getElementById(c); }
 	if (!SpiderGL.Type.instanceOf(c, HTMLCanvasElement)) { return null; }
-	var ctx = c.getContext(SpiderGL.WebGL.Context.WEBGL_STRING, args);
-	return ctx;
+	return c.getContext(SpiderGL.WebGL.Context.WEBGL_STRING, args);
 }
 
 SpiderGL.WebGL.Context._prepareContex = function (gl) {
 	if (!gl) return;
 
-	var sgl = gl._spidergl;
+	let sgl = gl._spidergl;
 	if (sgl) return;
 
 	sgl = { };
@@ -127,10 +126,10 @@ SpiderGL.WebGL.Context._prepareContex = function (gl) {
 	sgl.TAG = 0;
 	sgl.gl = gl;
 
-	var glFunctions = { };
+	const glFunctions = { };
 	sgl.glFunctions = glFunctions;
-	for (var f in gl) {
-		var fn = gl[fn];
+	for (const f in gl) {
+		const fn = gl[fn];
 		if (typeof fn == "function") {
 			glFunctions[f] = fn;
 		}
@@ -140,26 +139,25 @@ SpiderGL.WebGL.Context._prepareContex = function (gl) {
 SpiderGL.WebGL.Context._addExtension = function (gl, extName, propName, setupFunc) {
 	if (!gl) return;
 
-	var getExtension = gl.getExtension;
+	const getExtension = gl.getExtension;
 	gl.getExtension = function (name) {
 		if (name == extName) {
-			var sgl = this._spidergl;
+			const sgl = this._spidergl;
 			if (!sgl) return null;
-			var pubExt = sgl[propName];
+			let pubExt = sgl[propName];
 			if (!pubExt) {
 				pubExt = { };
 
 				pubExt.TAG = 0;
 
-				var ext = { };
+				const ext = { };
 				pubExt._ext = ext;
 
 				ext[propName] = pubExt;
 				ext.sgl = sgl;
 				ext.gl  = gl;
 
-				var glFunctions = { };
-				ext.glFunctions = glFunctions;
+				ext.glFunctions = { };
 
 				if (!setupFunc(gl, pubExt)) return null;
 
@@ -177,9 +175,9 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	if (!gl._spidergl) return false;
 	if (gl._spidergl.cb) return false;
 
-	var cb = pubExt;
-	var ext = cb._ext;
-	var glFunctions = ext.glFunctions;
+	const cb = pubExt;
+	const ext = cb._ext;
+	const glFunctions = ext.glFunctions;
 
 
 
@@ -195,8 +193,8 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 
 	glFunctions.bindBuffer = gl.bindBuffer;
 	gl.bindBuffer = function (target, buffer) {
-		var ext = this._spidergl.cb._ext;
-		var current = ext.currentBuffer[target];
+		const ext = this._spidergl.cb._ext;
+		const current = ext.currentBuffer[target];
 		if (current == buffer) return;
 		ext.currentBuffer[target] = buffer;
 		ext.glFunctions.bindBuffer.call(this, target, buffer);
@@ -207,17 +205,17 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	};
 
 	cb.pushBuffer = function (target) {
-		var ext = this._ext;
-		var stack  = ext.bufferStack[target];
-		var buffer = ext.currentBuffer[target];
+		const ext = this._ext;
+		const stack  = ext.bufferStack[target];
+		const buffer = ext.currentBuffer[target];
 		stack.push(buffer);
 	};
 
 	cb.popBuffer = function (target) {
-		var ext = this._ext;
-		var stack = ext.bufferStack[target];
+		const ext = this._ext;
+		const stack = ext.bufferStack[target];
 		if (stack.length <= 0) return;
-		var buffer = stack.pop();
+		const buffer = stack.pop();
 		ext.gl.bindBuffer(target, buffer);
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -234,8 +232,8 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 
 	glFunctions.bindFramebuffer = gl.bindFramebuffer;
 	gl.bindFramebuffer = function (target, framebuffer) {
-		var ext = this._spidergl.cb._ext;
-		var current = ext.currentFramebuffer[target];
+		const ext = this._spidergl.cb._ext;
+		const current = ext.currentFramebuffer[target];
 		if (current == framebuffer) return;
 		ext.currentFramebuffer[target] = framebuffer;
 		ext.glFunctions.bindFramebuffer.call(this, target, framebuffer);
@@ -246,17 +244,17 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	};
 
 	cb.pushFramebuffer = function (target) {
-		var ext = this._ext;
-		var stack  = ext.framebufferStack[target];
-		var framebuffer = ext.currentFramebuffer[target];
+		const ext = this._ext;
+		const stack  = ext.framebufferStack[target];
+		const framebuffer = ext.currentFramebuffer[target];
 		stack.push(framebuffer);
 	};
 
 	cb.popFramebuffer = function (target) {
-		var ext = this._ext;
-		var stack = ext.framebufferStack[target];
+		const ext = this._ext;
+		const stack = ext.framebufferStack[target];
 		if (stack.length <= 0) return;
-		var framebuffer = stack.pop();
+		const framebuffer = stack.pop();
 		ext.gl.bindFramebuffer(target, framebuffer);
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -271,8 +269,8 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 
 	glFunctions.useProgram = gl.useProgram;
 	gl.useProgram = function (program) {
-		var ext = this._spidergl.cb._ext;
-		var current = ext.currentProgram;
+		const ext = this._spidergl.cb._ext;
+		const current = ext.currentProgram;
 		if (current == program) return;
 		ext.currentProgram = program;
 		ext.glFunctions.useProgram.call(this, program);
@@ -283,17 +281,17 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	};
 
 	cb.pushProgram = function () {
-		var ext = this._ext;
-		var stack = ext.programStack;
-		var program = ext.currentProgram;
+		const ext = this._ext;
+		const stack = ext.programStack;
+		const program = ext.currentProgram;
 		stack.push(program);
 	};
 
 	cb.popProgram = function () {
-		var ext = this._ext;
-		var stack = ext.programStack;
+		const ext = this._ext;
+		const stack = ext.programStack;
 		if (stack.length <= 0) return;
-		var program = stack.pop();
+		const program = stack.pop();
 		ext.gl.useProgram(program);
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -310,8 +308,8 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 
 	glFunctions.bindRenderbuffer = gl.bindRenderbuffer;
 	gl.bindRenderbuffer = function (target, renderbuffer) {
-		var ext = this._spidergl.cb._ext;
-		var current = ext.currentRenderbuffer[target];
+		const ext = this._spidergl.cb._ext;
+		const current = ext.currentRenderbuffer[target];
 		if (current == renderbuffer) return;
 		ext.currentRenderbuffer[target] = renderbuffer;
 		ext.glFunctions.bindRenderbuffer.call(this, target, renderbuffer);
@@ -322,17 +320,17 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	};
 
 	cb.pushRenderbuffer = function (target) {
-		var ext = this._ext;
-		var stack  = ext.renderbufferStack[target];
-		var renderbuffer = ext.currentRenderbuffer[target];
+		const ext = this._ext;
+		const stack  = ext.renderbufferStack[target];
+		const renderbuffer = ext.currentRenderbuffer[target];
 		stack.push(renderbuffer);
 	};
 
 	cb.popRenderbuffer = function (target) {
-		var ext = this._ext;
-		var stack = ext.renderbufferStack[target];
+		const ext = this._ext;
+		const stack = ext.renderbufferStack[target];
 		if (stack.length <= 0) return;
-		var renderbuffer = stack.pop();
+		const renderbuffer = stack.pop();
 		ext.gl.bindRenderbuffer(target, renderbuffer);
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -351,8 +349,8 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 
 	ext.glFunctions.bindShader = function (target, shader) { };
 	cb.bindShader = function (target, shader) {
-		var ext = this._ext;
-		var current = ext.currentShader[target];
+		const ext = this._ext;
+		const current = ext.currentShader[target];
 		if (current == shader) return;
 		ext.currentShader[target] = shader;
 		ext.glFunctions.bindShader.call(ext.gl, target, shader);
@@ -363,17 +361,17 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	};
 
 	cb.pushShader = function (target) {
-		var ext = this._ext;
-		var stack  = ext.shaderStack[target];
-		var shader = ext.currentShader[target];
+		const ext = this._ext;
+		const stack  = ext.shaderStack[target];
+		const shader = ext.currentShader[target];
 		stack.push(shader);
 	};
 
 	cb.popShader = function (target) {
-		var ext = this._ext;
-		var stack = ext.shaderStack[target];
+		const ext = this._ext;
+		const stack = ext.shaderStack[target];
 		if (stack.length <= 0) return;
-		var shader = stack.pop();
+		const shader = stack.pop();
 		ext.gl.bindShader(target, shader);
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -384,21 +382,21 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	ext.currentTexture = { };
 
-	var currentTextureUnit = gl.getParameter(gl.ACTIVE_TEXTURE);
-	var textureUnitsCount  = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+	const currentTextureUnit = gl.getParameter(gl.ACTIVE_TEXTURE);
+	const textureUnitsCount  = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 	ext.currentTexture = { };
 	ext.textureStack = { };
 	ext.textureUnitStack = [ ];
-	for (var i=0; i<textureUnitsCount; ++i) {
-		var textureUnit = gl.TEXTURE0 + i;
+	for (let i=0; i<textureUnitsCount; ++i) {
+		const textureUnit = gl.TEXTURE0 + i;
 		gl.activeTexture(textureUnit);
 
-		var textureBindings = { }
+		const textureBindings = { }
 		textureBindings[gl.TEXTURE_2D      ] = gl.getParameter(gl.TEXTURE_BINDING_2D);
 		textureBindings[gl.TEXTURE_CUBE_MAP] = gl.getParameter(gl.TEXTURE_BINDING_CUBE_MAP);
 		ext.currentTexture[textureUnit] = textureBindings;
 
-		var textureStacks = { }
+		const textureStacks = { }
 		textureStacks[gl.TEXTURE_2D      ] = [ ];
 		textureStacks[gl.TEXTURE_CUBE_MAP] = [ ];
 		ext.textureStack[textureUnit] = textureStacks;
@@ -408,8 +406,8 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 
 	glFunctions.activeTexture = gl.activeTexture;
 	gl.activeTexture = function (texture) {
-		var ext = this._spidergl.cb._ext;
-		var current = ext.currentTextureUnit;
+		const ext = this._spidergl.cb._ext;
+		const current = ext.currentTextureUnit;
 		if (current == texture) return;
 		ext.currentTextureUnit = texture;
 		ext.glFunctions.activeTexture.call(this, texture);
@@ -420,50 +418,50 @@ SpiderGL.WebGL.Context._setup_SGL_current_binding = function (gl, pubExt) {
 	};
 
 	cb.pushTextureUnit = function () {
-		var ext = this._ext;
-		var stack  = ext.textureUnitStack;
-		var unit = ext.currentTextureUnit;
+		const ext = this._ext;
+		const stack  = ext.textureUnitStack;
+		const unit = ext.currentTextureUnit;
 		stack.push(unit);
 	};
 
 	cb.popTextureUnit = function () {
-		var ext = this._ext;
-		var stack  = ext.textureUnitStack;
+		const ext = this._ext;
+		const stack  = ext.textureUnitStack;
 		if (stack.length <= 0) return;
-		var unit = stack.pop();
+		const unit = stack.pop();
 		ext.gl.activeTexture(unit);
 	};
 
 	glFunctions.bindTexture = gl.bindTexture;
 	gl.bindTexture = function (target, texture) {
-		var ext = this._spidergl.cb._ext;
-		var unit = ext.currentTextureUnit;
-		var current = ext.currentTexture[unit][target];
+		const ext = this._spidergl.cb._ext;
+		const unit = ext.currentTextureUnit;
+		const current = ext.currentTexture[unit][target];
 		if (current == texture) return;
 		ext.currentTexture[unit][target] = texture;
 		ext.glFunctions.bindTexture.call(this, target, texture);
 	};
 
 	cb.getCurrentTexture = function (target) {
-		var ext = this._ext;
-		var unit = ext.currentTextureUnit;
+		const ext = this._ext;
+		const unit = ext.currentTextureUnit;
 		return ext.currentTexture[unit][target];
 	};
 
 	cb.pushTexture = function (target) {
-		var ext = this._ext;
-		var unit = ext.currentTextureUnit;
-		var stack  = ext.textureStack[unit][target];
-		var texture = ext.currentTexture[unit][target];
+		const ext = this._ext;
+		const unit = ext.currentTextureUnit;
+		const stack  = ext.textureStack[unit][target];
+		const texture = ext.currentTexture[unit][target];
 		stack.push(texture);
 	};
 
 	cb.popTexture = function (target) {
-		var ext = this._ext;
-		var unit = ext.currentTextureUnit;
-		var stack  = ext.textureStack[unit][target];
+		const ext = this._ext;
+		const unit = ext.currentTextureUnit;
+		const stack  = ext.textureStack[unit][target];
 		if (stack.length <= 0) return;
-		var texture = stack.pop();
+		const texture = stack.pop();
 		ext.gl.bindTexture(target, texture);
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -477,9 +475,8 @@ SpiderGL.WebGL.Context._setup_SGL_wrapper_notify = function (gl, pubExt) {
 	if (!gl._spidergl) return false;
 	if (gl._spidergl.wn) return false;
 
-	var wn = pubExt;
-	var ext = wn._ext;
-	var glFunctions = ext.glFunctions;
+	const ext = pubExt._ext;
+	const glFunctions = ext.glFunctions;
 
 	ext.cb = gl.getExtension("SGL_current_binding");
 	if (!ext.cb) return false;
@@ -490,69 +487,69 @@ SpiderGL.WebGL.Context._setup_SGL_wrapper_notify = function (gl, pubExt) {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	glFunctions.deleteBuffer = gl.deleteBuffer;
 	gl.deleteBuffer = function (buffer) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.deleteBuffer.apply(this, arguments);
-		var current = buffer;
+		const current = buffer;
 		(current && current._spidergl && current._spidergl._gl_deleteBuffer.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.isBuffer = gl.isBuffer;
 	gl.isBuffer = function (buffer) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.isBuffer.apply(this, arguments);
-		var current = buffer;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.isBuffer.apply(this, arguments);
+		const current = buffer;
 		(current && current._spidergl && current._spidergl._gl_isBuffer.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.bindBuffer = gl.bindBuffer;
 	gl.bindBuffer = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.bindBuffer.apply(this, arguments);
-		var current = ext.cb.getCurrentBuffer(target);
+		const current = ext.cb.getCurrentBuffer(target);
 		(current && current._spidergl && current._spidergl._gl_bindBuffer.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.getBufferParameter = gl.getBufferParameter;
 	gl.getBufferParameter = function (target) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getBufferParameter.apply(this, arguments);
-		var current = ext.cb.getCurrentBuffer(target);
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getBufferParameter.apply(this, arguments);
+		const current = ext.cb.getCurrentBuffer(target);
 		(current && current._spidergl && current._spidergl._gl_getBufferParameter.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.bufferData = gl.bufferData;
 	gl.bufferData = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.bufferData.apply(this, arguments);
-		var current = ext.cb.getCurrentBuffer(target);
+		const current = ext.cb.getCurrentBuffer(target);
 		(current && current._spidergl && current._spidergl._gl_bufferData.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.bufferSubData = gl.bufferSubData;
 	gl.bufferSubData = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.bufferSubData.apply(this, arguments);
-		var current = ext.cb.getCurrentBuffer(target);
+		const current = ext.cb.getCurrentBuffer(target);
 		(current && current._spidergl && current._spidergl._gl_bufferSubData.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.vertexAttribPointer = gl.vertexAttribPointer;
 	gl.vertexAttribPointer = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.vertexAttribPointer.apply(this, arguments);
-		var target  = this.ARRAY_BUFFER;
-		var current = ext.cb.getCurrentBuffer(target);
+		const target  = this.ARRAY_BUFFER;
+		const current = ext.cb.getCurrentBuffer(target);
 		(current && current._spidergl && current._spidergl._gl_vertexAttribPointer.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.drawElements = gl.drawElements;
 	gl.drawElements = function (buffer, mode, count, type, offset) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.drawElements.apply(this, arguments);
-		var target  = this.ELEMENT_ARRAY_BUFFER;
-		var current = ext.cb.getCurrentBuffer(target);
+		const target  = this.ELEMENT_ARRAY_BUFFER;
+		const current = ext.cb.getCurrentBuffer(target);
 		(current && current._spidergl && current._spidergl._gl_drawElements.apply(current._spidergl, arguments));
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -563,78 +560,78 @@ SpiderGL.WebGL.Context._setup_SGL_wrapper_notify = function (gl, pubExt) {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	glFunctions.deleteFramebuffer = gl.deleteFramebuffer;
 	gl.deleteFramebuffer = function (framebuffer) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.deleteFramebuffer.apply(this, arguments);
-		var current = framebuffer;
+		const current = framebuffer;
 		(current && current._spidergl && current._spidergl._gl_deleteFramebuffer.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.isFramebuffer = gl.isFramebuffer;
 	gl.isFramebuffer = function (framebuffer) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.isFramebuffer.apply(this, arguments);
-		var current = framebuffer;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.isFramebuffer.apply(this, arguments);
+		const current = framebuffer;
 		(current && current._spidergl && current._spidergl._gl_isFramebuffer.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.bindFramebuffer = gl.bindFramebuffer;
 	gl.bindFramebuffer = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.bindFramebuffer.apply(this, arguments);
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current && current._spidergl && current._spidergl._gl_bindFramebuffer.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.checkFramebufferStatus = gl.checkFramebufferStatus;
 	gl.checkFramebufferStatus = function (target) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.checkFramebufferStatus.apply(this, arguments);
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.checkFramebufferStatus.apply(this, arguments);
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current && current._spidergl && current._spidergl._gl_checkFramebufferStatus.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getFramebufferAttachmentParameter = gl.getFramebufferAttachmentParameter;
 	gl.getFramebufferAttachmentParameter = function (target) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getFramebufferAttachmentParameter.apply(this, arguments);
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getFramebufferAttachmentParameter.apply(this, arguments);
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current && current._spidergl && current._spidergl._gl_getFramebufferAttachmentParameter.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.framebufferRenderbuffer = gl.framebufferRenderbuffer;
 	gl.framebufferRenderbuffer = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.framebufferRenderbuffer.apply(this, arguments);
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current && current._spidergl && current._spidergl._gl_framebufferRenderbuffer.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.framebufferTexture2D = gl.framebufferTexture2D;
 	gl.framebufferTexture2D = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.framebufferTexture2D.apply(this, arguments);
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current && current._spidergl && current._spidergl._gl_framebufferTexture2D.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.clear = gl.clear;
 	gl.clear = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.clear.apply(this, arguments);
-		var target = this.FRAMEBUFFER;
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const target = this.FRAMEBUFFER;
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current && current._spidergl && current._spidergl._gl_clear.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.readPixels = gl.readPixels;
 	gl.readPixels = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.readPixels.apply(this, arguments);
-		var target = this.FRAMEBUFFER;
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const target = this.FRAMEBUFFER;
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current && current._spidergl && current._spidergl._gl_readPixels.apply(current._spidergl, arguments));
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -645,290 +642,290 @@ SpiderGL.WebGL.Context._setup_SGL_wrapper_notify = function (gl, pubExt) {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	glFunctions.deleteProgram = gl.deleteProgram;
 	gl.deleteProgram = function (program) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.deleteProgram.apply(this, arguments);
-		var current = program;
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_deleteProgram.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.isProgram = gl.isProgram;
 	gl.isProgram = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.isProgram.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.isProgram.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_isProgram.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.useProgram = gl.useProgram;
 	gl.useProgram = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.useProgram.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_useProgram.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.getActiveAttrib = gl.getActiveAttrib;
 	gl.getActiveAttrib = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getActiveAttrib.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getActiveAttrib.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getActiveAttrib.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getActiveUniform = gl.getActiveUniform;
 	gl.getActiveUniform = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getActiveUniform.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getActiveUniform.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getActiveUniform.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getAttachedShaders = gl.getAttachedShaders;
 	gl.getAttachedShaders = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getAttachedShaders.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getAttachedShaders.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getAttachedShaders.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getAttribLocation = gl.getAttribLocation;
 	gl.getAttribLocation = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getAttribLocation.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getAttribLocation.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getAttribLocation.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getProgramParameter = gl.getProgramParameter;
 	gl.getProgramParameter = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getProgramParameter.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getProgramParameter.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getProgramParameter.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getProgramInfoLog = gl.getProgramInfoLog;
 	gl.getProgramInfoLog = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getProgramInfoLog.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getProgramInfoLog.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getProgramInfoLog.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getUniform = gl.getUniform;
 	gl.getUniform = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getUniform.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getUniform.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getUniform.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getUniformLocation = gl.getUniformLocation;
 	gl.getUniformLocation = function (program) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getUniformLocation.apply(this, arguments);
-		var current = program;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getUniformLocation.apply(this, arguments);
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_getUniformLocation.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.attachShader = gl.attachShader;
 	gl.attachShader = function (program) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.attachShader.apply(this, arguments);
-		var current = program;
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_attachShader.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.bindAttribLocation = gl.bindAttribLocation;
 	gl.bindAttribLocation = function (program) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.bindAttribLocation.apply(this, arguments);
-		var current = program;
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_bindAttribLocation.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.detachShader = gl.detachShader;
 	gl.detachShader = function (program) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.detachShader.apply(this, arguments);
-		var current = program;
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_detachShader.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.linkProgram = gl.linkProgram;
 	gl.linkProgram = function (program) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.linkProgram.apply(this, arguments);
-		var current = program;
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_linkProgram.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform1f = gl.uniform1f;
 	gl.uniform1f = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform1f.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform1f.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform1fv = gl.uniform1fv;
 	gl.uniform1fv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform1fv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform1fv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform1i = gl.uniform1i;
 	gl.uniform1i = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform1i.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform1i.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform1iv = gl.uniform1iv;
 	gl.uniform1iv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform1iv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform1iv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform2f = gl.uniform2f;
 	gl.uniform2f = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform2f.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform2f.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform2fv = gl.uniform2fv;
 	gl.uniform2fv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform2fv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform2fv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform2i = gl.uniform2i;
 	gl.uniform2i = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform2i.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform2i.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform2iv = gl.uniform2iv;
 	gl.uniform2iv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform2iv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform2iv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform3f = gl.uniform3f;
 	gl.uniform3f = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform3f.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform3f.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform3fv = gl.uniform3fv;
 	gl.uniform3fv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform3fv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform3fv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform3i = gl.uniform3i;
 	gl.uniform3i = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform3i.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform3i.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform3iv = gl.uniform3iv;
 	gl.uniform3iv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform3iv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform3iv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform4f = gl.uniform4f;
 	gl.uniform4f = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform4f.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform4f.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform4fv = gl.uniform4fv;
 	gl.uniform4fv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform4fv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform4fv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform4i = gl.uniform4i;
 	gl.uniform4i = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform4i.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform4i.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniform4iv = gl.uniform4iv;
 	gl.uniform4iv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniform4iv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniform4iv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniformMatrix2fv = gl.uniformMatrix2fv;
 	gl.uniformMatrix2fv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniformMatrix2fv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniformMatrix2fv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniformMatrix3fv = gl.uniformMatrix3fv;
 	gl.uniformMatrix3fv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniformMatrix3fv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniformMatrix3fv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.uniformMatrix4fv = gl.uniformMatrix4fv;
 	gl.uniformMatrix4fv = function () {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.uniformMatrix4fv.apply(this, arguments);
-		var current = ext.cb.getCurrentProgram();
+		const current = ext.cb.getCurrentProgram();
 		(current && current._spidergl && current._spidergl._gl_uniformMatrix4fv.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.validateProgram = gl.validateProgram;
 	gl.validateProgram = function (program) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.validateProgram.apply(this, arguments);
-		var current = program;
+		const current = program;
 		(current && current._spidergl && current._spidergl._gl_validateProgram.apply(current._spidergl, arguments));
 	};
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -939,43 +936,43 @@ SpiderGL.WebGL.Context._setup_SGL_wrapper_notify = function (gl, pubExt) {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	glFunctions.deleteRenderbuffer = gl.deleteRenderbuffer;
 	gl.deleteRenderbuffer = function (renderbuffer) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.deleteRenderbuffer.apply(this, arguments);
-		var current = renderbuffer;
+		const current = renderbuffer;
 		(current && current._spidergl && current._spidergl._gl_deleteRenderbuffer.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.isRenderbuffer = gl.isRenderbuffer;
 	gl.isRenderbuffer = function (renderbuffer) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.isRenderbuffer.apply(this, arguments);
-		var current = renderbuffer;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.isRenderbuffer.apply(this, arguments);
+		const current = renderbuffer;
 		(current && current._spidergl && current._spidergl._gl_isRenderbuffer.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.bindRenderbuffer = gl.bindRenderbuffer;
 	gl.bindRenderbuffer = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.bindRenderbuffer.apply(this, arguments);
-		var current = ext.cb.getCurrentRenderbuffer(target);
+		const current = ext.cb.getCurrentRenderbuffer(target);
 		(current && current._spidergl && current._spidergl._gl_bindRenderbuffer.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.getRenderbufferParameter = gl.getRenderbufferParameter;
 	gl.getRenderbufferParameter = function (target) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getRenderbufferParameter.apply(this, arguments);
-		var current = ext.cb.getCurrentRenderbuffer(target);
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getRenderbufferParameter.apply(this, arguments);
+		const current = ext.cb.getCurrentRenderbuffer(target);
 		(current && current._spidergl && current._spidergl._gl_getRenderbufferParameter.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.renderbufferStorage = gl.renderbufferStorage;
 	gl.renderbufferStorage = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.renderbufferStorage.apply(this, arguments);
-		var current = ext.cb.getCurrentRenderbuffer(target);
+		const current = ext.cb.getCurrentRenderbuffer(target);
 		(current && current._spidergl && current._spidergl._gl_renderbufferStorage.apply(current._spidergl, arguments));
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -986,61 +983,61 @@ SpiderGL.WebGL.Context._setup_SGL_wrapper_notify = function (gl, pubExt) {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	glFunctions.deleteShader = gl.deleteShader;
 	gl.deleteShader = function (shader) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.deleteShader.apply(this, arguments);
-		var current = shader;
+		const current = shader;
 		(current && current._spidergl && current._spidergl._gl_deleteShader.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.isShader = gl.isShader;
 	gl.isShader = function (shader) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.isShader.apply(this, arguments);
-		var current = shader;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.isShader.apply(this, arguments);
+		const current = shader;
 		(current && current._spidergl && current._spidergl._gl_isShader.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getShaderParameter = gl.getShaderParameter;
 	gl.getShaderParameter = function (shader) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getShaderParameter.apply(this, arguments);
-		var current = shader;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getShaderParameter.apply(this, arguments);
+		const current = shader;
 		(current && current._spidergl && current._spidergl._gl_getShaderParameter.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getShaderInfoLog = gl.getShaderInfoLog;
 	gl.getShaderInfoLog = function (shader) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getShaderInfoLog.apply(this, arguments);
-		var current = shader;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getShaderInfoLog.apply(this, arguments);
+		const current = shader;
 		(current && current._spidergl && current._spidergl._gl_getShaderInfoLog.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.getShaderSource = gl.getShaderSource;
 	gl.getShaderSource = function (shader) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getShaderSource.apply(this, arguments);
-		var current = shader;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getShaderSource.apply(this, arguments);
+		const current = shader;
 		(current && current._spidergl && current._spidergl._gl_getShaderSource.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.compileShader = gl.compileShader;
 	gl.compileShader = function (shader) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.compileShader.apply(this, arguments);
-		var current = shader;
+		const current = shader;
 		(current && current._spidergl && current._spidergl._gl_compileShader.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.shaderSource = gl.shaderSource;
 	gl.shaderSource = function (shader) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.shaderSource.apply(this, arguments);
-		var current = shader;
+		const current = shader;
 		(current && current._spidergl && current._spidergl._gl_shaderSource.apply(current._spidergl, arguments));
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -1061,95 +1058,95 @@ SpiderGL.WebGL.Context._setup_SGL_wrapper_notify = function (gl, pubExt) {
 
 	glFunctions.deleteTexture = gl.deleteTexture;
 	gl.deleteTexture = function (texture) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.deleteTexture.apply(this, arguments);
-		var current = texture;
+		const current = texture;
 		(current && current._spidergl && current._spidergl._gl_deleteTexture.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.isTexture = gl.isTexture;
 	gl.isTexture = function (texture) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.isTexture.apply(this, arguments);
-		var current = texture;
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.isTexture.apply(this, arguments);
+		const current = texture;
 		(current && current._spidergl && current._spidergl._gl_isTexture.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.bindTexture = gl.bindTexture;
 	gl.bindTexture = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.bindTexture.apply(this, arguments);
-		var current = ext.cb.getCurrentTexture(target);
+		const current = ext.cb.getCurrentTexture(target);
 		(current && current._spidergl && current._spidergl._gl_bindTexture.apply(current._spidergl, arguments));
 	};
 
 	glFunctions.getTexParameter = gl.getTexParameter;
 	gl.getTexParameter = function (target) {
-		var ext = this._spidergl.wn._ext;
-		var r = ext.glFunctions.getTexParameter.apply(this, arguments);
-		var current = ext.cb.getCurrentTexture(target);
+		const ext = this._spidergl.wn._ext;
+		const r = ext.glFunctions.getTexParameter.apply(this, arguments);
+		const current = ext.cb.getCurrentTexture(target);
 		(current && current._spidergl && current._spidergl._gl_getTexParameter.apply(current._spidergl, arguments));
 		return r;
 	};
 
 	glFunctions.copyTexImage2D = gl.copyTexImage2D;
 	gl.copyTexImage2D = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.copyTexImage2D.apply(this, arguments);
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current && current._spidergl && current._spidergl._gl_copyTexImage2D.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.copyTexSubImage2D = gl.copyTexSubImage2D;
 	gl.copyTexSubImage2D = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.copyTexSubImage2D.apply(this, arguments);
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current && current._spidergl && current._spidergl._gl_copyTexSubImage2D.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.generateMipmap = gl.generateMipmap;
 	gl.generateMipmap = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.generateMipmap.apply(this, arguments);
-		var current = ext.cb.getCurrentTexture(target);
+		const current = ext.cb.getCurrentTexture(target);
 		(current && current._spidergl && current._spidergl._gl_generateMipmap.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.texImage2D = gl.texImage2D;
 	gl.texImage2D = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.texImage2D.apply(this, arguments);
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current && current._spidergl && current._spidergl._gl_texImage2D.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.texParameterf = gl.texParameterf;
 	gl.texParameterf = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.texParameterf.apply(this, arguments);
-		var current = ext.cb.getCurrentTexture(target);
+		const current = ext.cb.getCurrentTexture(target);
 		(current && current._spidergl && current._spidergl._gl_texParameterf.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.texParameteri = gl.texParameteri;
 	gl.texParameteri = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.texParameteri.apply(this, arguments);
-		var current = ext.cb.getCurrentTexture(target);
+		const current = ext.cb.getCurrentTexture(target);
 		(current && current._spidergl && current._spidergl._gl_texParameteri.apply(current._spidergl, arguments));
 	}
 
 	glFunctions.texSubImage2D = gl.texSubImage2D;
 	gl.texSubImage2D = function (target) {
-		var ext = this._spidergl.wn._ext;
+		const ext = this._spidergl.wn._ext;
 		ext.glFunctions.texSubImage2D.apply(this, arguments);
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current && current._spidergl && current._spidergl._gl_texSubImage2D.apply(current._spidergl, arguments));
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -1163,9 +1160,9 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 	if (!gl._spidergl) return false;
 	if (gl._spidergl.dsa) return false;
 
-	var dsa = pubExt;
-	var ext = dsa._ext;
-	var glFunctions = ext.glFunctions;
+	const dsa = pubExt;
+	const ext = dsa._ext;
+	const glFunctions = ext.glFunctions;
 
 	ext.cb = gl.getExtension("SGL_current_binding");
 	if (!ext.cb) return false;
@@ -1173,48 +1170,48 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 	// buffer
 	//////////////////////////////////////////////////////////////////////////////////////////
 	dsa.getBufferParameter = function (buffer, target, pname) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentBuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentBuffer(target);
 		(current != buffer) && gl.bindBuffer(target, buffer);
-		var r = gl.getBufferParameter(target, pname);
+		const r = gl.getBufferParameter(target, pname);
 		(current != buffer) && gl.bindBuffer(target, current);
 		return r;
 	};
 
 	dsa.bufferData = function (buffer, target, dataOrSize, usage) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentBuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentBuffer(target);
 		(current != buffer) && gl.bindBuffer(target, buffer);
 		gl.bufferData(target, dataOrSize, usage);
 		(current != buffer) && gl.bindBuffer(target, current);
 	}
 
 	dsa.bufferSubData = function (buffer, target, offset, data) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentBuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentBuffer(target);
 		(current != buffer) && gl.bindBuffer(target, buffer);
 		gl.bufferSubData(target, offset, data);
 		(current != buffer) && gl.bindBuffer(target, current);
 	}
 
 	dsa.vertexAttribPointer = function (buffer, indx, size, type, normalized, stride, offset) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var target  = gl.ARRAY_BUFFER;
-		var current = ext.cb.getCurrentBuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const target  = gl.ARRAY_BUFFER;
+		const current = ext.cb.getCurrentBuffer(target);
 		(current != buffer) && gl.bindBuffer(target, buffer);
 		gl.vertexAttribPointer(indx, size, type, normalized, stride, offset);
 		(current != buffer) && gl.bindBuffer(target, current);
 	};
 
 	dsa.drawElements = function (buffer, mode, count, type, offset) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var target  = gl.ELEMENT_ARRAY_BUFFER;
-		var current = ext.cb.getCurrentBuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const target  = gl.ELEMENT_ARRAY_BUFFER;
+		const current = ext.cb.getCurrentBuffer(target);
 		(current != buffer) && gl.bindBuffer(target, buffer);
 		gl.drawElements(mode, count, type, offset);
 		(current != buffer) && gl.bindBuffer(target, current);
@@ -1226,58 +1223,58 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 	// framebuffer
 	//////////////////////////////////////////////////////////////////////////////////////////
 	dsa.checkFramebufferStatus = function (framebuffer, target) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, framebuffer);
-		var r = gl.checkFramebufferStatus(target);
+		const r = gl.checkFramebufferStatus(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, current);
 		return r;
 	};
 
 	dsa.getFramebufferAttachmentParameter = function (framebuffer, target, attachment, pname) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, framebuffer);
-		var r = gl.getFramebufferAttachmentParameter(target, attachment, pname);
+		const r = gl.getFramebufferAttachmentParameter(target, attachment, pname);
 		(current != framebuffer) && gl.bindFramebuffer(target, current);
 		return r;
 	};
 
 	dsa.framebufferRenderbuffer = function (framebuffer, target, attachment, renderbuffertarget, renderbuffer) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, framebuffer);
 		gl.framebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
 		(current != framebuffer) && gl.bindFramebuffer(target, current);
 	};
 
 	dsa.framebufferTexture2D = function (framebuffer, target, attachment, textarget, texture, level) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, framebuffer);
 		gl.framebufferTexture2D(target, attachment, textarget, texture, level);
 		(current != framebuffer) && gl.bindFramebuffer(target, current);
 	};
 
 	dsa.clear = function (framebuffer, mask) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var target = gl.FRAMEBUFFER
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const target = gl.FRAMEBUFFER
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, framebuffer);
 		gl.clear(mask);
 		(current != framebuffer) && gl.bindFramebuffer(target, current);
 	};
 
 	dsa.readPixels = function (framebuffer, x, y, width, height, format, type, pixels) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var target = gl.FRAMEBUFFER
-		var current = ext.cb.getCurrentFramebuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const target = gl.FRAMEBUFFER
+		const current = ext.cb.getCurrentFramebuffer(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, framebuffer);
 		gl.readPixels(x, y, width, height, format, type, pixels);
 		(current != framebuffer) && gl.bindFramebuffer(target, current);
@@ -1289,171 +1286,171 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 	// program
 	//////////////////////////////////////////////////////////////////////////////////////////
 	dsa.uniform1f = function (program, location, x) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform1f(location, x);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform1fv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform1fv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform1i = function (program, location, x) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform1i(location, x);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform1iv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform1iv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform2f = function (program, location, x, y) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform2f(location, x, y);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform2fv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform2fv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform2i = function (program, location, x, y) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform2i(location, x, y);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform2iv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform2iv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform3f = function (program, location, x, y, z) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform3f(location, x, y, z);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform3fv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform3fv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform3i = function (program, location, x, y, z) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform3i(location, x, y, z);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform3iv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform3iv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform4f = function (program, location, x, y, z, w) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform4f(location, x, y, z, w);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform4fv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform4fv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform4i = function (program, location, x, y, z, w) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform4i(location, x, y, z, w);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniform4iv = function (program, location, v) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniform4iv(location, v);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniformMatrix2fv = function (program, location, transpose, value) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniformMatrix2fv(location, transpose, value);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniformMatrix3fv = function (program, location, transpose, value) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniformMatrix3fv(location, transpose, value);
 		(current != program) && gl.useProgram(current);
 	};
 
 	dsa.uniformMatrix4fv = function (program, location, transpose, value) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentProgram();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentProgram();
 		(current != program) && gl.useProgram(program);
 		gl.uniformMatrix4fv(location, transpose, value);
 		(current != program) && gl.useProgram(current);
@@ -1465,19 +1462,19 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 	// renderbuffer
 	//////////////////////////////////////////////////////////////////////////////////////////
 	dsa.getRenderbufferParameter = function (renderbuffer, target, pname) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentRenderbuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentRenderbuffer(target);
 		(current != renderbuffer) && gl.bindRenderbuffer(target, renderbuffer);
-		var r = gl.getRenderbufferParameter.call(gl, target, pname);
+		const r = gl.getRenderbufferParameter.call(gl, target, pname);
 		(current != renderbuffer) && gl.bindRenderbuffer(target, current);
 		return r;
 	};
 
 	dsa.renderbufferStorage = function (renderbuffer, target, internalformat, width, height) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentRenderbuffer(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentRenderbuffer(target);
 		(current != renderbuffer) && gl.bindRenderbuffer(target, renderbuffer);
 		gl.renderbufferStorage(target, internalformat, width, height);
 		(current != renderbuffer) && gl.bindRenderbuffer(target, current);
@@ -1509,89 +1506,89 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 	ext.textureTargetMap[gl.TEXTURE_CUBE_MAP_NEGATIVE_Z] = gl.TEXTURE_CUBE_MAP;
 
 	dsa.getTexParameter = function (texture, target, pname) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentTexture(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentTexture(target);
 		(current != texture) && gl.bindTexture(target, texture);
-		var r = gl.getTexParameter(target, pname);
+		const r = gl.getTexParameter(target, pname);
 		(current != texture) && gl.bindTexture(target, current);
 		return r;
 	};
 
 	dsa.copyTexImage2D = function (texture, target, level, internalformat, x, y, width, height, border) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current != texture) && gl.bindTexture(texTarget, texture);
 		gl.copyTexImage2D(target, level, internalformat, x, y, width, height, border);
 		(current != texture) && gl.bindTexture(texTarget, current);
 	};
 
 	dsa.copyTexSubImage2D = function (texture, target, level, xoffset, yoffset, x, y, width, height, border) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current != texture) && gl.bindTexture(texTarget, texture);
 		gl.copyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height, border);
 		(current != texture) && gl.bindTexture(texTarget, current);
 	};
 
 	dsa.generateMipmap = function (texture, target) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentTexture(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentTexture(target);
 		(current != texture) && gl.bindTexture(target, texture);
 		gl.generateMipmap(target);
 		(current != texture) && gl.bindTexture(target, current);
 	};
 
 	dsa.texImage2D = function (texture, target) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current != texture) && gl.bindTexture(texTarget, texture);
-		var args = Array.prototype.slice.call(arguments, 1);
+		const args = Array.prototype.slice.call(arguments, 1);
 		gl.texImage2D.apply(gl, args);
 		(current != texture) && gl.bindTexture(texTarget, current);
 	};
 
 	dsa.texParameterf = function (texture, target, pname, param) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentTexture(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentTexture(target);
 		(current != texture) && gl.bindTexture(target, texture);
 		gl.texParameterf(target, pname, param);
 		(current != texture) && gl.bindTexture(target, current);
 	};
 
 	dsa.texParameteri = function (texture, target, pname, param) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var current = ext.cb.getCurrentTexture(target);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const current = ext.cb.getCurrentTexture(target);
 		(current != texture) && gl.bindTexture(target, texture);
 		gl.texParameteri(target, pname, param);
 		(current != texture) && gl.bindTexture(target, current);
 	};
 
 	dsa.texSubImage2D = function (texture, target) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var texTarget = ext.textureTargetMap[target];
-		var current = ext.cb.getCurrentTexture(texTarget);
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const texTarget = ext.textureTargetMap[target];
+		const current = ext.cb.getCurrentTexture(texTarget);
 		(current != texture) && gl.bindTexture(texTarget, texture);
-		var args = Array.prototype.slice.call(arguments, 1);
+		const args = Array.prototype.slice.call(arguments, 1);
 		gl.texSubImage2D.apply(gl, args);
 		(current != texture) && gl.bindTexture(texTarget, current);
 	};
 
 	dsa.bindTexture = function (unit, target, texture) {
-		var ext = this._ext;
-		var gl  = ext.gl;
-		var cb = ext.cb;
-		var currentUnit = cb.getCurrentTextureUnit();
+		const ext = this._ext;
+		const gl  = ext.gl;
+		const cb = ext.cb;
+		const currentUnit = cb.getCurrentTextureUnit();
 		(currentUnit != unit) && gl.activeTexture(unit);
 		gl.bindTexture(target, texture);
 		(currentUnit != unit) && gl.activeTexture(currentUnit);
@@ -1613,21 +1610,21 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
  * The following example clarifies how bindings are handled.
  *
  * @example
- * var textureA = gl.createTexture();
+ * const textureA = gl.createTexture();
  * gl.bindTexture(gl.TEXTURE_2D, textureA);
  * gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
  * // other texture calls
- * var textureB = new SpiderGL.WebGL.Texture2D(gl, parameters);
+ * const textureB = new SpiderGL.WebGL.Texture2D(gl, parameters);
  * textureB.minFilter = gl.LINEAR; // textureB is hiddenly bound to modify the minification filter
  * gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // textureA is automatically re-bound to keep WebGL semantic
  * textureB.magFilter = gl.LINEAR; // textureB is hiddenly bound to modify another parameter
  * gl.drawArrays(gl.TRIANGLES, 0, 3); // textureA is automatically re-bound to keep WebGL semantic
  * textureB.bind(); // bind textureB to WebGL, breaking the binding with textureA
  * gl.drawArrays(gl.TRIANGLES, 0, 3); // textureA is used
- * 
+ *
  * @param {WebGLRenderingContext} gl The WebGLRenderingContext to modify.
  *
- * @returns {bool} True on success, false if the gl argument is not valid or has already been modified.
+ * @returns {boolean} True on success, false if the gl argument is not valid or has already been modified.
  *
  * @see SpiderGL.WebGL.Context.isHijacked
  * @see SpiderGL.WebGL.Context.getHijacked
@@ -1644,13 +1641,11 @@ SpiderGL.WebGL.Context.hijack = function (gl) {
 	SpiderGL.WebGL.Context._addExtension(gl, "SGL_wrapper_notify",      "wn",  SpiderGL.WebGL.Context._setup_SGL_wrapper_notify);
 	SpiderGL.WebGL.Context._addExtension(gl, "SGL_direct_state_access", "dsa", SpiderGL.WebGL.Context._setup_SGL_direct_state_access);
 
-	var cb  = gl.getExtension("SGL_current_binding"    );
-	var wn  = gl.getExtension("SGL_wrapper_notify"     );
-	var dsa = gl.getExtension("SGL_direct_state_access");
+	const cb  = gl.getExtension("SGL_current_binding"    );
+	const wn  = gl.getExtension("SGL_wrapper_notify"     );
+	const dsa = gl.getExtension("SGL_direct_state_access");
 
-	var hijacked = (!!cb && !!wn && !!dsa);
-
-	return hijacked;
+	return (!!cb && !!wn && !!dsa);
 }
 
 /**
@@ -1660,7 +1655,7 @@ SpiderGL.WebGL.Context.hijack = function (gl) {
  *
  * @param {WebGLRenderingContext} gl The WebGLRenderingContext to test.
  *
- * @returns {bool} True on success, false if the gl argument is not valid or has already been modified.
+ * @returns {boolean} True on success, false if the gl argument is not valid or has already been modified.
  *
  * @see SpiderGL.WebGL.Context.hijack
  * @see SpiderGL.WebGL.Context.getHijacked
@@ -1685,7 +1680,7 @@ SpiderGL.WebGL.Context.isHijacked = function (gl) {
  * @see SpiderGL.WebGL.Context.isHijacked
  */
 SpiderGL.WebGL.Context.getHijacked = function (canvas, args) {
-	var gl = SpiderGL.WebGL.Context.get(canvas, args);
+	const gl = SpiderGL.WebGL.Context.get(canvas, args);
 	SpiderGL.WebGL.Context.hijack(gl);
 	return gl;
 }
@@ -1714,19 +1709,19 @@ SpiderGL.WebGL.Context.setStandardGLUnpack = function (gl) {
  *
  * @example
  * // create a native vertex WebGLBuffer
- * var vbo = gl.createBuffer();
+ * const vbo = gl.createBuffer();
  * gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
  * // ... use buffer ...
  * // create a SpiderGL wrapper from an existing object;
  * // the native object can be accessed through the "handle" property.
- * var wrappedVBO = new SpiderGL.WebGL.VertexBuffer(gl, {handle: vbo});
+ * const wrappedVBO = new SpiderGL.WebGL.VertexBuffer(gl, {handle: vbo});
  * // it is not mandatory to bind the object before setting parameters or data
  * as the hijacked WebGLRendering context takes care of it and does not break previous bindings
  * wrappedVBO.setSize(sizeInBytes, gl.STATIC_DRAW);
  * wrappedVBO.bind(); // equivalent to gl.bindBuffer(gl.ARRAY_BUFFER, wrappedVBO.handle)
  * // create another SpiderGL.WebGL.VertexBuffer without specifying an existing object,
  * // thus letting the wrapper to create one
- * var anotherVBO = new SpiderGL.WebGL.VertexBuffer(gl, {size: someSizeInBytes});
+ * const anotherVBO = new SpiderGL.WebGL.VertexBuffer(gl, {size: someSizeInBytes});
  *
  * @class The SpiderGL.WebGL.ObjectGL is the base class for all WebGL object wrappers.
  *
@@ -1745,7 +1740,8 @@ SpiderGL.WebGL.ObjectGL = function (gl, target, options) {
 
 	SpiderGL.Core.ObjectBase.call(this);
 
-	var wn = gl.getExtension("SGL_wrapper_notify");
+	// TODO check getExtension doesn't modify gl
+	// const wn = gl.getExtension("SGL_wrapper_notify");
 
 	this._gl  = gl;
 	this._cb  = gl.getExtension("SGL_current_binding");
@@ -1792,7 +1788,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 	 *
 	 * The native handle can be used with WebGLRenderingContext methods.
 	 *
-	 * @type WebObjectGL
+	 * @type {WebObjectGL}
 	 *
 	 * @readonly
 	 *
@@ -1816,7 +1812,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 	/**
 	 * Tests for non-null handle.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -1828,7 +1824,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 	 * Tests for empty object.
 	 * It is reimplemented on each derived classes with object-specific semantic.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -1842,7 +1838,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 	 * Tests if the object is ready to use.
 	 * It is reimplemented on each derived classes with object-specific semantic.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -1852,7 +1848,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 
 	/**
 	 * Destroys the wrapped WebObjectGL.
-	 * 
+	 *
 	 * After calling this method, the object must not be accessed anymore.
 	 */
 	destroy : function () {
@@ -1860,7 +1856,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 
 	/**
 	 * Binds the object to the rendering pipeline.
-	 * 
+	 *
 	 * The wrapped WebObjectGL is bound to its default target in the WebGLRenderingContext.
 	 */
 	bind : function () {
@@ -1868,7 +1864,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 
 	/**
 	 * Binds the null object to the rendering pipeline.
-	 * 
+	 *
 	 * This method is provided for symmetry with {@link SpiderGL.WebGL.ObjectGL#bind}. It binds the null object to the per-object webGL target.
 	 */
 	unbind : function () {
@@ -1887,7 +1883,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.ObjectGL, SpiderGL.Core.ObjectBase);
  *
  * @augments SpiderGL.WebGL.ObjectGL
  *
- * @param {WebGLRenderingContext} gl A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
+ * @param {WebGLRenderingContext} glContext A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
  * @param {number} target The WebGLBuffer target. It must be either WebGLRenderingContext.ARRAY_BUFFER or WebGLRenderingContext.ELEMENT_ARRAY_BUFFER.
  * @param {object} [options] Optional parameters.
  * @param {WebGLBuffer} [options.handle] If defined, the provided buffer will be wrapped and its size and usage attributes will be queried to the rendering context. Otherwise an internal buffer will be created.
@@ -1897,13 +1893,13 @@ SpiderGL.Type.extend(SpiderGL.WebGL.ObjectGL, SpiderGL.Core.ObjectBase);
  *
  * @example
  * // create a vertex buffer with a specified size
- * var vbuff = new SpiderGL.WebGL.VertexBuffer(gl, {
+ * const vbuff = new SpiderGL.WebGL.VertexBuffer(gl, {
  * 	size  : 2 * 1024 * 1024,  // 2 MB
  * 	usage : gl.STATIC_DRAW    // if omitted, defaults to SpiderGL.WebGL.Buffer.DEFAULT_USAGE
  * });
  *
  * // create an index buffer with content
- * var ibuff = new SpiderGL.WebGL.IndexBuffer(gl, {
+ * const ibuff = new SpiderGL.WebGL.IndexBuffer(gl, {
  * 	data : new Uint16Array(...)  // use a typed array for setting buffer data
  * });
  *
@@ -1911,8 +1907,8 @@ SpiderGL.Type.extend(SpiderGL.WebGL.ObjectGL, SpiderGL.Core.ObjectBase);
  * @see SpiderGL.WebGL.VertexBuffer
  * @see SpiderGL.WebGL.IndexBuffer
  */
-SpiderGL.WebGL.Buffer = function (gl, target, options) {
-	if (!SpiderGL.WebGL.Context.isHijacked(gl)) { return null; }
+SpiderGL.WebGL.Buffer = function (glContext, target, options) {
+	if (!SpiderGL.WebGL.Context.isHijacked(glContext)) { return null; }
 
 	if (SpiderGL.Type.instanceOf(options, WebGLBuffer)) {
 		options = { handle : options };
@@ -1931,15 +1927,14 @@ SpiderGL.WebGL.Buffer = function (gl, target, options) {
 		usage  : SpiderGL.WebGL.Buffer.DEFAULT_USAGE
 	}, options);
 
-	SpiderGL.WebGL.ObjectGL.call(this, gl, target, options);
+	SpiderGL.WebGL.ObjectGL.call(this, glContext, target, options);
 	if (!!this._h && !!this._h._spidergl && (this._h._spidergl != this)) return this._h._spidergl;
 
-	var gl  = this._gl;
-	var cb  = this._cb;
-	var dsa = this._dsa;
+	const gl  = this._gl;
+	const cb  = this._cb;
 
-	var t = this._t;
-	var h = this._h;
+	const t = this._t;
+	let h = this._h;
 
 	cb.pushBuffer(t);
 	if (h) {
@@ -2017,8 +2012,8 @@ SpiderGL.WebGL.Buffer.prototype = {
 	},
 
 	_gl_bufferData : function () {
-		var sizeOrData = arguments[1];
-		var usage = arguments[2];
+		const sizeOrData = arguments[1];
+		const usage = arguments[2];
 		this._size = (SpiderGL.Type.isNumber(sizeOrData)) ? (sizeOrData) : (sizeOrData.byteLength);
 		this._usage = usage;
 	},
@@ -2036,7 +2031,7 @@ SpiderGL.WebGL.Buffer.prototype = {
 	 * Tests for empty buffer.
 	 * It is true if the buffer size is greather than zero, false otherwise.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -2048,7 +2043,7 @@ SpiderGL.WebGL.Buffer.prototype = {
 	 * Tests if the buffer is ready to use.
 	 * A buffer is considered ready if its size is greater than zero.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -2216,7 +2211,7 @@ SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_TYPE = WebGLRenderingContext.FLOAT
 /**
  * Default vertex attribute normalized flag when using SpiderGL.WebGL.VertexBuffer#vertexAttribPointer.
  *
- * @type bool
+ * @type boolean
  *
  * @default false
  */
@@ -2243,7 +2238,7 @@ SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_OFFSET = 0;
 /**
  * Default enable flag for vertex attribute when using SpiderGL.WebGL.VertexBuffer#vertexAttribPointer.
  *
- * @type bool
+ * @type boolean
  *
  * @default true
  */
@@ -2270,10 +2265,10 @@ SpiderGL.WebGL.VertexBuffer.prototype = {
 	 * @param {number} [options.normalized=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_NORMALIZED] True if the attribute has an integer type and must be normalized.
 	 * @param {number} [options.stride=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_STRIDE] Bytes from the beginning of an element and the beginning of the next one.
 	 * @param {number} [options.offset=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_OFFSET] Offset (in bytes) from the start of the buffer.
-	 * @param {bool} [options.enable=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_ENABLE] If true, the index-th vertex attribute array will be enabled with WebGLRenderingContext.enableVertexAttribArray(index).
+	 * @param {boolean} [options.enable=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_ENABLE] If true, the index-th vertex attribute array will be enabled with WebGLRenderingContext.enableVertexAttribArray(index).
 	 *
 	 * @example
-	 * var vb = new SpiderGL.WebGL.VertexBuffer(...); // create a vertex buffer
+	 * const vb = new SpiderGL.WebGL.VertexBuffer(...); // create a vertex buffer
 	 * // [... set vb data ...]
 	 * // calling vb.vertexAttribPointer has the same effect of:
 	 * // vb.bind();
@@ -2398,7 +2393,7 @@ SpiderGL.WebGL.IndexBuffer.prototype = {
 	 * @param {number} [options.offset=SpiderGL.WebGL.IndexBuffer.DEFAULT_DRAW_ELEMENTS_OFFSET] Offset (in bytes) from the start of the buffer.
 	 *
 	 * @example
-	 * var ib = new SpiderGL.WebGL.IndexBuffer(...); // create an index buffer
+	 * const ib = new SpiderGL.WebGL.IndexBuffer(...); // create an index buffer
 	 * // [... set ib data ...]
 	 * // calling ib.drawElements has the same effect of:
 	 * // ib.bind();
@@ -2419,7 +2414,7 @@ SpiderGL.WebGL.IndexBuffer.prototype = {
 		}, options);
 
 		if (options.count < 1) {
-			var bytesPerElem = SpiderGL.Type.typeSizeFromGL(options.glType);
+			const bytesPerElem = SpiderGL.Type.typeSizeFromGL(options.glType);
 			options.count = (this._size - options.offset) / bytesPerElem;
 		}
 
@@ -2438,10 +2433,10 @@ SpiderGL.Type.extend(SpiderGL.WebGL.IndexBuffer, SpiderGL.WebGL.Buffer);
  *
  * @augments SpiderGL.WebGL.ObjectGL
  *
- * @param {WebGLRenderingContext} gl A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
+ * @param {WebGLRenderingContext} glContext A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
  * @param {object} [options] Optional parameters.
  * @param {WebGLFramebuffer} [options.handle] A WebGLFramebuffer. If present, this object will be used as the wrapped WebGLFramebuffer. Otherwise a new one will be created.
- * @param {bool} [options.autoViewport=SpiderGL.WebGL.Framebuffer.DEFAULT_AUTO_VIEWPORT] The value of the {@link autoViewport} property.
+ * @param {boolean} [options.autoViewport=SpiderGL.WebGL.Framebuffer.DEFAULT_AUTO_VIEWPORT] The value of the {@link autoViewport} property.
  * @param {object} [options.color] Color attachment target (see {@link setAttachments}).
  * @param {object} [options.depth] Depth attachment target (see {@link setAttachments}).
  * @param {object} [options.stencil] Stencil attachment target (see {@link setAttachments}).
@@ -2453,8 +2448,8 @@ SpiderGL.Type.extend(SpiderGL.WebGL.IndexBuffer, SpiderGL.WebGL.Buffer);
  * @see SpiderGL.WebGL.Renderbuffer
  * @see SpiderGL.WebGL.ObjectGL
  */
-SpiderGL.WebGL.Framebuffer = function (gl, options) {
-	if (!SpiderGL.WebGL.Context.isHijacked(gl)) { return null; }
+SpiderGL.WebGL.Framebuffer = function (glContext, options) {
+	if (!SpiderGL.WebGL.Context.isHijacked(glContext)) { return null; }
 
 	if (SpiderGL.Type.instanceOf(options, WebGLFramebuffer)) {
 		options = { handle : options };
@@ -2465,24 +2460,21 @@ SpiderGL.WebGL.Framebuffer = function (gl, options) {
 		autoViewport : SpiderGL.WebGL.Framebuffer.DEFAULT_AUTO_VIEWPORT
 	}, options);
 
-	var that = SpiderGL.WebGL.ObjectGL.call(this, gl, SpiderGL.WebGL.Framebuffer.TARGET, options);
+	// const that = SpiderGL.WebGL.ObjectGL.call(this, glContext, SpiderGL.WebGL.Framebuffer.TARGET, options);
 	if (!!this._h && !!this._h._spidergl && (this._h._spidergl != this)) return this._h._spidergl;
 
-	var gl  = this._gl;
-	var cb  = this._cb;
-	var dsa = this._dsa;
+	const gl  = this._gl;
+	const cb  = this._cb;
 
-	var t = this._t;
-	var h = this._h;
+	const t = this._t;
+	let h = this._h;
 
-	var imported = false;
-	if (h) {
-		imported = true;
-	}
-	else {
-		h = gl.createFramebuffer();
-		this._h = h;
-	}
+	// TODO check logic
+	const imported = !!h;
+	if (!imported) {
+    h = gl.createFramebuffer();
+    this._h = h;
+  }
 	h._spidergl = this;
 
 	this._attachments  = { };
@@ -2494,22 +2486,22 @@ SpiderGL.WebGL.Framebuffer = function (gl, options) {
 	gl.bindFramebuffer(t, h);
 
 	if (imported) {
-		var resource = null;
-		var type     = 0;
-		var level    = 0;
-		var target   = 0;
+		let resource = null;
+		let type     = 0;
+		let level    = 0;
+		let target   = 0;
 
-		for (var attachment in SpiderGL.WebGL.Framebuffer._attachmentName) {
-			resource = gl.getFramebufferAttachmentParameter(t, att, gl.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
-			type     = gl.getFramebufferAttachmentParameter(t, att, gl.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
+		for (const attachment in SpiderGL.WebGL.Framebuffer._attachmentName) {
+			resource = gl.getFramebufferAttachmentParameter(t, attachment, gl.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
+			type     = gl.getFramebufferAttachmentParameter(t, attachment, gl.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
 			switch (type) {
 				case gl.RENDERBUFFER:
 					target = gl.RENDERBUFFER;
 					this._importRenderbuffer(t, attachment, target, resource);
 				break;
 				case gl.TEXTURE:
-					level  = gl.getFramebufferAttachmentParameter(t, att, gl.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL);
-					target = gl.getFramebufferAttachmentParameter(t, att, gl.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE);
+					level  = gl.getFramebufferAttachmentParameter(t, attachment, gl.FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL);
+					target = gl.getFramebufferAttachmentParameter(t, attachment, gl.FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE);
 					if (target == 0) target = gl.TEXTURE_2D;
 					this._importTexture(t, attachment, target, resource, level);
 				break;
@@ -2537,7 +2529,7 @@ SpiderGL.WebGL.Framebuffer.TARGET = WebGLRenderingContext.FRAMEBUFFER;
 /**
  * Default value for SpiderGL.WebGL.Framebuffer#autoViewport.
  *
- * @type bool
+ * @type boolean
  *
  * @default true
  */
@@ -2689,7 +2681,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	},
 
 	_importTexture : function (target, attachment, textarget, texture, level) {
-		var name = SpiderGL.WebGL.Framebuffer._attachmentName[attachment];
+		const name = SpiderGL.WebGL.Framebuffer._attachmentName[attachment];
 		if (!name) return;
 
 		if (!texture) {
@@ -2697,9 +2689,9 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 			return;
 		}
 
-		var gl = this._gl;
+		const gl = this._gl;
 
-		var att = {
+		const att = {
 			attachment : attachment,
 			resource   : null,
 			target     : textarget,
@@ -2721,7 +2713,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	},
 
 	_importRenderbuffer : function (target, attachment, renderbuffertarget, renderbuffer) {
-		var name = SpiderGL.WebGL.Framebuffer._attachmentName[attachment];
+		const name = SpiderGL.WebGL.Framebuffer._attachmentName[attachment];
 		if (!name) return;
 
 		if (!renderbuffer) {
@@ -2729,9 +2721,9 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 			return;
 		}
 
-		var gl = this._gl;
+		const gl = this._gl;
 
-		var att = {
+		const att = {
 			attachment : attachment,
 			resource   : null,
 			target     : renderbuffertarget,
@@ -2747,14 +2739,14 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	},
 
 	_setAttachment : function (attachment, nfo) {
-		var name = SpiderGL.WebGL.Framebuffer._attachmentName[attachment];
+		const name = SpiderGL.WebGL.Framebuffer._attachmentName[attachment];
 		if (!name) return false;
 
-		var gl = this._gl;
+		const gl = this._gl;
 
-		var isNullResource = (!nfo || (("resource" in nfo) && !nfo.resource));
+		const isNullResource = (!nfo || (("resource" in nfo) && !nfo.resource));
 		if  (isNullResource) {
-			var att = this._attachments[name];
+			const att = this._attachments[name];
 			if (att) {
 				if (att.target === gl.RENDERBUFFER) {
 					gl.framebufferRenderbuffer(t, att.attachment, gl.RENDERBUFFER, null);
@@ -2766,7 +2758,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 			return;
 		}
 
-		var resourceType = gl.NONE;
+		let resourceType = gl.NONE;
 
 		if (SpiderGL.Type.instanceOf(nfo, WebGLTexture)) {
 			nfo = { resource : nfo };
@@ -2785,7 +2777,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 			resourceType = gl.RENDERBUFFER;
 		}
 
-		var cubeFaceSpecified = !!nfo && (typeof (nfo.face) != "undefined");
+		const cubeFaceSpecified = !!nfo && (typeof (nfo.face) != "undefined");
 
 		nfo = SpiderGL.Utility.getDefaultObject({
 			resource : null,
@@ -2793,12 +2785,12 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 			face     : SpiderGL.WebGL.Framebuffer.DEFAULT_ATTACHMENT_CUBE_MAP_FACE
 		}, nfo);
 
-		var t = this._t;
+		const t = this._t;
 
 		switch (resourceType) {
 			case gl.TEXTURE:
-				var isCubemap = SpiderGL.Type.instanceOf(nfo, SpiderGL.WebGL.TextureCubeMap) || cubeFaceSpecified;
-				var target = (isCubemap) ? (nfo.face) : (gl.TEXTURE_2D);
+				const isCubemap = SpiderGL.Type.instanceOf(nfo, SpiderGL.WebGL.TextureCubeMap) || cubeFaceSpecified;
+				const target = (isCubemap) ? (nfo.face) : (gl.TEXTURE_2D);
 				gl.framebufferTexture2D(t, attachment, target, nfo.resource, nfo.level);
 			break;
 			case gl.RENDERBUFFER:
@@ -2825,7 +2817,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * Tests if the framebuffer is ready to use.
 	 * A framebuffer is considered ready if its status is WebGLRenderingContext.FRAMEBUFFER_COMPLETE.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 *
@@ -2915,7 +2907,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 *
 	 * If true, when calling {@link bind} the viewport will be set with a call to WebGLRenderingContext.viewport().
 	 *
-	 * @type bool
+	 * @type boolean
 	 */
 	get autoViewport() {
 		return this._autoViewport;
@@ -2938,20 +2930,20 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * @param {object|SpiderGL.WebGL.Renderbuffer} [attachments.stencil] Same as attachments.color but for WebGLRenderingContext.STENCIL_ATTACHMENT. To ensure the restrictions of the WebGL specifications, depth and depthStencil attachments are detached.
 	 * @param {object|SpiderGL.WebGL.Renderbuffer} [attachments.depthStencil] Same as attachments.color but for WebGLRenderingContext.DEPTH_STENCIL_ATTACHMENT. To ensure the restrictions of the WebGL specifications, depth and stencil attachments are detached.
 	 *
-	 * @returns {bool} True if the framebuffer is complete, false otherwise.
+	 * @returns {boolean} True if the framebuffer is complete, false otherwise.
 	 *
 	 * @example
-	 * var t2D = new SpiderGL.WebGL.Texture2D(...);
-	 * var tCM = new SpiderGL.WebGL.TextureCubeMap(...);
-	 * var rb  = new SpiderGL.WebGL.Renderbuffer(...);
+	 * const t2D = new SpiderGL.WebGL.Texture2D(...);
+	 * const tCM = new SpiderGL.WebGL.TextureCubeMap(...);
+	 * const rb  = new SpiderGL.WebGL.Renderbuffer(...);
 	 *
-	 * var fb = new SpiderGL.WebGL.Framebuffer(gl, {
+	 * const fb = new SpiderGL.WebGL.Framebuffer(gl, {
 	 * 	color : {resource: t2D, level: 0 }, // alternatively: color: t2D; in this case level would default to SpiderGL.WebGL.Framebuffer.DEFAULT_ATTACHMENT_TEXTURE_LEVEL
 	 * 	depth : rb                          // alternatively: depth: {resource: rb}; renderbuffers do not have mipmap levels
 	 * };
 	 * // use fb
 	 * // ...
-	 * 
+	 *
 	 * // change attachment
 	 * fb.setAttachments({
 	 * 	color: {resource: tCM, face: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z} // if face is omitted, defaults to SpiderGL.WebGL.Framebuffer.DEFAULT_ATTACHMENT_CUBE_MAP_FACE
@@ -2962,11 +2954,11 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	setAttachments : function (attachments) {
 		attachments = attachments || { };
 
-		var gl = this._gl;
-		var cb = this._cb;
+		const gl = this._gl;
+		const cb = this._cb;
 
-		var t = this._t;
-		var h = this._h;
+		const t = this._t;
+		const h = this._h;
 
 		cb.pushFramebuffer(t);
 		gl.bindFramebuffer(t, h);
@@ -3007,9 +2999,9 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * @see setAttachments
 	 */
 	getAttachments : function () {
-		var rAtts = { };
-		var att   = null;
-		for (var a in this._attachments) {
+		const rAtts = { };
+		let att   = null;
+		for (const a in this._attachments) {
 			att = this._attachments[a];
 			rAtts[a] = {
 				attachment : att.attachment,
@@ -3047,7 +3039,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * @see depthStencilTarget
 	 */
 	get colorTarget() {
-		var att = this._attachments.color;
+		const att = this._attachments.color;
 		if (!att) return null
 		return att.resource;
 	},
@@ -3070,7 +3062,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * @see depthStencilTarget
 	 */
 	get depthTarget() {
-		var att = this._attachments.depth;
+		const att = this._attachments.depth;
 		if (!att) return null
 		return att.resource;
 	},
@@ -3093,7 +3085,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * @see depthStencilTarget
 	 */
 	get stencilTarget() {
-		var att = this._attachments.stencil;
+		const att = this._attachments.stencil;
 		if (!att) return null
 		return att.resource;
 	},
@@ -3116,7 +3108,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * @see stencilTarget
 	 */
 	get depthStencilTarget() {
-		var att = this._attachments.depthStencil;
+		const att = this._attachments.depthStencil;
 		if (!att) return null
 		return att.resource;
 	},
@@ -3171,8 +3163,8 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * @see setAttachments
 	 */
 	applyViewport : function () {
-		var gl = this._gl;
-		var vp = this._viewport;
+		const gl = this._gl;
+		const vp = this._viewport;
 		gl.viewport(vp[0], vp[1], vp[2], vp[3]);
 	},
 
@@ -3190,17 +3182,17 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	 * Binds the wrapped WebGLFramebuffer to the WebGLRenderingContex.FRAMEBUFFER target.
 	 * If setViewport is not specified and autoViewport is true, the stored viewport is set with WebGLRenderingContext.viewport().
 	 *
-	 * @param {bool} [setViewport] If specified, overrides the value of autoViewport.
+	 * @param {boolean} [setViewport] If specified, overrides the value of autoViewport.
 	 *
 	 * @see unbind
 	 * @see autoViewport
 	 */
 	bind : function (setViewport) {
-		var gl = this._gl;
+		const gl = this._gl;
 		gl.bindFramebuffer(this._t, this._h);
-		var svp = SpiderGL.Utility.getDefaultValue(setViewport, this._autoViewport);
+		const svp = SpiderGL.Utility.getDefaultValue(setViewport, this._autoViewport);
 		if (svp) {
-			var vp = this._viewport;
+			const vp = this._viewport;
 			gl.viewport(vp[0], vp[1], vp[2], vp[3]);
 		}
 	},
@@ -3230,16 +3222,16 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Framebuffer, SpiderGL.WebGL.ObjectGL);
  * @param {WebGLRenderingContext} gl A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
  * @param {object} [options] Optional parameters.
  * @param {WebGLProgram} [options.handle] A WebGLProgram. If present, this object will be used as the wrapped WebGLProgram and the attached shaders will be queried. Otherwise a new one will be created.
- * @param {bool} [options.autoLink=SpiderGL.WebGL.Program.DEFAULT_AUTO_LINK] If true, the program will be linked automatically whenever shaders are added or removed, or vertex attribute indices change.
+ * @param {boolean} [options.autoLink=SpiderGL.WebGL.Program.DEFAULT_AUTO_LINK] If true, the program will be linked automatically whenever shaders are added or removed, or vertex attribute indices change.
  * @param {array} [options.shaders] An array of SpiderGL.WebGL.Shader objects to attach to the program.
  * @param {object} [options.attributes] An object where each property has the name of a vertex shader attribute and whose value is the attribute index to wich the vertex attribute will be bound.
  * @param {object} [options.uniforms] An object where each property has the name of a program uniform and whose value is the uniform value.
  *
  * @example
- * var vertexShader   = new SpiderGL.WebGL.VertexShader   (gl, {source: vertexShaderSrc  });
- * var fragmentShader = new SpiderGL.WebGL.FragmentShader (gl, {source: fragmentShaderSrc});
+ * const vertexShader   = new SpiderGL.WebGL.VertexShader   (gl, {source: vertexShaderSrc  });
+ * const fragmentShader = new SpiderGL.WebGL.FragmentShader (gl, {source: fragmentShaderSrc});
  *
- * var program = new SpiderGL.WebGL.Program(gl, {
+ * const program = new SpiderGL.WebGL.Program(gl, {
  * 	autoLink : true, // if true, the program is automatically linked whenever shaders are added or removed, or whenever attribute indices are changed.
  * 	shaders  : [vertexShader, fragmentShader],
  * 	attributes : {
@@ -3268,8 +3260,8 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Framebuffer, SpiderGL.WebGL.ObjectGL);
  * @see SpiderGL.WebGL.Shader
  * @see SpiderGL.WebGL.ObjectGL
  */
-SpiderGL.WebGL.Program = function (gl, options) {
-	if (!SpiderGL.WebGL.Context.isHijacked(gl)) { return null; }
+SpiderGL.WebGL.Program = function (glContext, options) {
+	if (!SpiderGL.WebGL.Context.isHijacked(glContext)) { return null; }
 
 	if (SpiderGL.Type.instanceOf(options, WebGLProgram)) {
 		options = { handle : options };
@@ -3280,19 +3272,19 @@ SpiderGL.WebGL.Program = function (gl, options) {
 		autoLink : SpiderGL.WebGL.Program.DEFAULT_AUTO_LINK
 	}, options);
 
-	SpiderGL.WebGL.ObjectGL.call(this, gl, SpiderGL.WebGL.Program.TARGET, options);
+	SpiderGL.WebGL.ObjectGL.call(this, glContext, SpiderGL.WebGL.Program.TARGET, options);
 	if (!!this._h && !!this._h._spidergl && (this._h._spidergl != this)) return this._h._spidergl;
 
-	var gl  = this._gl;
-	var cb  = this._cb;
-	var dsa = this._dsa;
+	const gl  = this._gl;
+	const cb  = this._cb;
+	const dsa = this._dsa;
 
-	var h = this._h;
+	let h = this._h;
 
-	var linked    = false;
-	var log       = "";
+	let linked    = false;
+	let log       = "";
 
-	var imported = false;
+	let imported = false;
 	if (h) {
 		imported = true;
 		linked   = !!gl.getProgramParameter(h, gl.LINK_STATUS);
@@ -3313,13 +3305,13 @@ SpiderGL.WebGL.Program = function (gl, options) {
 	this._uniforms   = { };
 
 	if (imported) {
-		var shaders = gl.getAttachedShaders(h);
-		for (var i=0,n=shaders.length; i<n; ++i) {
+		const shaders = gl.getAttachedShaders(h);
+		for (let i=0,n=shaders.length; i<n; ++i) {
 			this._importShader(shaders[i]);
 		}
 	}
 
-	var mustLink = false;
+	let mustLink = false;
 	if (this._addShaders(options.shaders))       { mustLink = true; }
 	if (this._setAttributes(options.attributes)) { mustLink = true; }
 
@@ -3342,7 +3334,7 @@ SpiderGL.WebGL.Program.TARGET = WebGLRenderingContext.NONE;
 /**
  * Default value for SpiderGL.WebGL.Program#autoLink.
  *
- * @type bool
+ * @type boolean
  *
  * @default true
  */
@@ -3358,7 +3350,7 @@ SpiderGL.WebGL.Program.DEFAULT_AUTO_LINK = true;
 SpiderGL.WebGL.Program.unbind = function (gl) { gl.useProgram(null); };
 
 SpiderGL.WebGL.Program._uniformSetFunctions = { };
-SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL        ] = function (dsa, h, v) { dsa.uniform1i        (h, this.location,        v); };
+SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.boolean        ] = function (dsa, h, v) { dsa.uniform1i        (h, this.location,        v); };
 SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL_VEC2   ] = function (dsa, h, v) { dsa.uniform2iv       (h, this.location,        v); };
 SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL_VEC3   ] = function (dsa, h, v) { dsa.uniform3iv       (h, this.location,        v); };
 SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL_VEC4   ] = function (dsa, h, v) { dsa.uniform4iv       (h, this.location,        v); };
@@ -3420,7 +3412,7 @@ SpiderGL.WebGL.Program.prototype = {
 
 	_gl_detachShader : function (program, shader) {
 		if (!shader) { return; }
-		var idx = this._shaderHandleIndex(shader);
+		const idx = this._shaderHandleIndex(shader);
 		if (idx < 0) { return; }
 		this._shaders.splice(idx, 1);
 	},
@@ -3490,7 +3482,7 @@ SpiderGL.WebGL.Program.prototype = {
 	},
 
 	_shaderHandleIndex : function (shader) {
-		for (var i=0,n=this._shaders.length; i<n; ++i) {
+		for (let i=0,n=this._shaders.length; i<n; ++i) {
 			if (this._shaders[i].handle === shader) {
 				return i;
 			}
@@ -3501,7 +3493,7 @@ SpiderGL.WebGL.Program.prototype = {
 	_shaderIndex : function (shader) {
 		if (this._shaders.indexOf) { return this._shaders.indexOf(shader); }
 		else {
-			for (var i=0,n=this._shaders.length; i<n; ++i) {
+			for (let i=0,n=this._shaders.length; i<n; ++i) {
 				if (this._shaders[i] === shader) {
 					return i;
 				}
@@ -3514,10 +3506,10 @@ SpiderGL.WebGL.Program.prototype = {
 		if (!shader) { return; }
 		if (this._shaderHandleIndex(shader) >= 0) { return; }
 
-		var gl = this._gl;
-		var shd = shader._spidergl;
+		const gl = this._gl;
+		let shd = shader._spidergl;
 		if (!shd) {
-			var type = gl.getShaderParameter(shader, gl.SHADER_TYPE);
+			const type = gl.getShaderParameter(shader, gl.SHADER_TYPE);
 			switch (type) {
 				case gl.VERTEX_SHADER   : shd = new SpiderGL.WebGL.VertexShader   (gl, { handle : shader }); break;
 				case gl.FRAGMENT_SHADER : shd = new SpiderGL.WebGL.FragmentShader (gl, { handle : shader }); break;
@@ -3528,17 +3520,17 @@ SpiderGL.WebGL.Program.prototype = {
 	},
 
 	_updateActiveInfo : function () {
-		var gl = this._gl;
-		var h = this._h;
+		const gl = this._gl;
+		const h = this._h;
 
-		var n    = 0;
-		var nfo  = null;
-		var name = null;
-		var loc  = null;
+		let n    = 0;
+		let nfo  = null;
+		let name = null;
+		let loc  = null;
 
-		var attributes = { };
+		const attributes = { };
 		n = gl.getProgramParameter(h, gl.ACTIVE_ATTRIBUTES);
-		for (var i=0; i<n; ++i) {
+		for (let i=0; i<n; ++i) {
 			nfo  = gl.getActiveAttrib(h, i);
 			name = nfo.name;
 			loc  = gl.getAttribLocation(h, name);
@@ -3551,9 +3543,9 @@ SpiderGL.WebGL.Program.prototype = {
 			};
 		}
 
-		var uniforms = { };
+		const uniforms = { };
 		n = gl.getProgramParameter(h, gl.ACTIVE_UNIFORMS);
-		for (var i=0; i<n; ++i) {
+		for (let i=0; i<n; ++i) {
 			nfo = gl.getActiveUniform(h, i);
 			name = nfo.name;
 			loc  = gl.getUniformLocation(h, name);
@@ -3566,11 +3558,11 @@ SpiderGL.WebGL.Program.prototype = {
 				setValue : SpiderGL.WebGL.Program._uniformSetFunctions[nfo.type]
 			};
 			if (nfo.size > 1) {
-				var subs = name.lastIndexOf("[0]");
+				const subs = name.lastIndexOf("[0]");
 				if (subs == (name.length - 3)) {
-					var arrayName = name.slice(0, subs);
-					for (var j=1; j<nfo.size; ++j) {
-						var subName = arrayName + "[" + j + "]";
+					const arrayName = name.slice(0, subs);
+					for (let j=1; j<nfo.size; ++j) {
+						const subName = arrayName + "[" + j + "]";
 						loc = gl.getUniformLocation(h, subName);
 						uniforms[subName] = {
 							index    : i,
@@ -3590,8 +3582,8 @@ SpiderGL.WebGL.Program.prototype = {
 	},
 
 	_postLink : function () {
-		var gl = this._gl;
-		var h = this._h;
+		const gl = this._gl;
+		const h = this._h;
 		this._linked = !!gl.getProgramParameter(h, gl.LINK_STATUS);
 		this._log = gl.getProgramInfoLog(h);
 		if (!this._log) { this._log = ""; }
@@ -3601,12 +3593,12 @@ SpiderGL.WebGL.Program.prototype = {
 	_addShaders : function (shaders) {
 		if (!shaders) { return false; }
 
-		var gl = this._gl;
-		var h = this._h;
-		var shd = null;
-		var hshd = null;
+		const gl = this._gl;
+		const h = this._h;
+		let shd = null;
+		let hshd = null;
 
-		for (var i=0,n=shaders.length; i<n; ++i) {
+		for (let i=0,n=shaders.length; i<n; ++i) {
 			shd = shaders[i];
 			hshd = null;
 			if (SpiderGL.Type.instanceOf(shd, SpiderGL.WebGL.Shader)) {
@@ -3626,12 +3618,12 @@ SpiderGL.WebGL.Program.prototype = {
 	_removeShaders : function (shaders) {
 		if (!shaders) { return false; }
 
-		var gl = this._gl;
-		var h = this._h;
-		var shd = null;
-		var hshd = null;
+		const gl = this._gl;
+		const h = this._h;
+		let shd = null;
+		let hshd = null;
 
-		for (var i=0,n=shaders.length; i<n; ++i) {
+		for (let i=0,n=shaders.length; i<n; ++i) {
 			shd = shaders[i];
 			hshd = null;
 			if (SpiderGL.Type.instanceOf(shd, SpiderGL.WebGL.Shader)) {
@@ -3650,9 +3642,9 @@ SpiderGL.WebGL.Program.prototype = {
 
 	_setAttributes : function (attributes) {
 		if (!attributes) { return false; }
-		var gl = this._gl;
-		var h = this._h;
-		for (var a in attributes) {
+		const gl = this._gl;
+		const h = this._h;
+		for (const a in attributes) {
 			gl.bindAttribLocation(h, attributes[a], a);
 		}
 		return true;
@@ -3666,7 +3658,7 @@ SpiderGL.WebGL.Program.prototype = {
 	 * Tests if the program is ready to use.
 	 * A program is considered ready if it is succesfully linked.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 *
@@ -3679,7 +3671,7 @@ SpiderGL.WebGL.Program.prototype = {
 	/**
 	 * Tests if the program is linked.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 *
@@ -3698,7 +3690,7 @@ SpiderGL.WebGL.Program.prototype = {
 	/**
 	 * Gets the program info log.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -3709,7 +3701,7 @@ SpiderGL.WebGL.Program.prototype = {
 	/**
 	 * Gets/Sets if the program will be linked automatically whenever shaders are added or removed, or vertex attribute indices change.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @see link
 	 */
@@ -3717,7 +3709,7 @@ SpiderGL.WebGL.Program.prototype = {
 		return this._autoLink;
 	},
 
-	set autoLink(on) { 
+	set autoLink(on) {
 		this._autoLink = !!on;
 	},
 
@@ -3726,14 +3718,14 @@ SpiderGL.WebGL.Program.prototype = {
 	 * If link is not specified and autoLink is true, the program is automatically linked.
 	 *
 	 * @param {array|SpiderGL.WebGL.Shader} shaders An array of SpiderGL.WebGL.Shader or a single SpiderGL.WebGL.Shader to attach.
-	 * @param {bool} [link] If specified, overrides the value of autoLink.
+	 * @param {boolean} [link] If specified, overrides the value of autoLink.
 	 *
-	 * @returns {bool} If the program has been linked, returns whether the program is linked, otherwise always returns true.
+	 * @returns {boolean} If the program has been linked, returns whether the program is linked, otherwise always returns true.
 	 *
 	 * @see isLinked
 	 */
 	addShaders : function (shaders, link) {
-		var mustLink = this._addShaders(shaders);
+		let mustLink = this._addShaders(shaders);
 		if (!mustLink) { return true; };
 		mustLink = SpiderGL.Utility.getDefaultValue(link, this._autoLink);
 		if (!mustLink) { return true; }
@@ -3745,12 +3737,12 @@ SpiderGL.WebGL.Program.prototype = {
 	 * If link is not specified and autoLink is true, the program is automatically linked.
 	 *
 	 * @param {array|SpiderGL.WebGL.Shader} shaders An array of SpiderGL.WebGL.Shader or a single SpiderGL.WebGL.Shader to detach.
-	 * @param {bool} [link] If specified, overrides the value of autoLink.
+	 * @param {boolean} [link] If specified, overrides the value of autoLink.
 	 *
-	 * @returns {bool} If the program has been linked, returns whether the program is linked, otherwise always returns true.
+	 * @returns {boolean} If the program has been linked, returns whether the program is linked, otherwise always returns true.
 	 */
 	removeShaders : function (shaders, link) {
-		var mustLink = this._removeShaders(shaders);
+		let mustLink = this._removeShaders(shaders);
 		if (!mustLink) { return true; };
 		mustLink = SpiderGL.Utility.getDefaultValue(link, this._autoLink);
 		if (!mustLink) { return true; }
@@ -3762,7 +3754,7 @@ SpiderGL.WebGL.Program.prototype = {
 	 *
 	 * @param {SpiderGL.WebGL.Shader} shader The shader to test for attachment.
 	 *
-	 * @returns {bool} If the shader is attached, false otherwise.
+	 * @returns {boolean} If the shader is attached, false otherwise.
 	 */
 	hasShader : function (shader) {
 		return (this._shaderIndex(shader) >= 0);
@@ -3780,7 +3772,7 @@ SpiderGL.WebGL.Program.prototype = {
 	/**
 	 * Links the program.
 	 *
-	 * @returns {bool} True if the program has been succesfully linked, false otherwise.
+	 * @returns {boolean} True if the program has been succesfully linked, false otherwise.
 	 */
 	link : function () {
 		this._gl.linkProgram(this._h);
@@ -3791,13 +3783,13 @@ SpiderGL.WebGL.Program.prototype = {
 	 * Validates the program with the current attribute indices, uniforms and WebGLRenderingContext state
 	 * It is performed using WebGLRenderingContext.validateProgram().
 	 *
-	 * @returns {bool} True if the program has been succesfully validated, false otherwise.
+	 * @returns {boolean} True if the program has been succesfully validated, false otherwise.
 	 */
 	validate : function () {
-		var gl = this._gl;
-		var h = this._h;
+		const gl = this._gl;
+		const h = this._h;
 		gl.validateProgram(h);
-		var validated = !!gl.getProgramParameter(h, gl.VALIDATE_STATUS);
+		const validated = !!gl.getProgramParameter(h, gl.VALIDATE_STATUS);
 		return validated;
 	},
 
@@ -3810,8 +3802,8 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @param {object} attributes The attributes to set. For each attribute index to set, the object must contain a property whose name is the name of the vertex attribute and whose value is a non-negative integer specifying the attribute bind index.
 	 *
 	 * @example
-	 * var vertexShaderSrc = "" +
-	 * 	"..." + 
+	 * const vertexShaderSrc = "" +
+	 * 	"..." +
 	 * 	"attribute vec3 aPosition; \n" +
 	 * 	"attribute vec3 aNormal;   \n" +
 	 * 	"...";
@@ -3828,7 +3820,7 @@ SpiderGL.WebGL.Program.prototype = {
 	 * 	aColor    : 2   // this attribute is not set because it is not an active attribute
 	 * });
 	 *
-	 * @returns {bool} True if the attributes have been set, false otherwise.
+	 * @returns {boolean} True if the attributes have been set, false otherwise.
 	 *
 	 * @see getAttributesIndices
 	 * @see getAttributesInfo
@@ -3851,9 +3843,9 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @see getAttributesInfo
 	 */
 	getAttributesNames : function () {
-		var attributes  = this._attributes;
-		var rAttributes = [ ];
-		for (var a in attributes) {
+		const attributes  = this._attributes;
+		const rAttributes = [ ];
+		for (const a in attributes) {
 			rAttributes.push(attributes[a].name);
 		}
 		return rAttributes;
@@ -3868,9 +3860,9 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @see setAttributes
 	 */
 	getAttributesIndices : function () {
-		var attributes  = this._attributes;
-		var rAttributes = { };
-		for (var a in attributes) {
+		const attributes  = this._attributes;
+		const rAttributes = { };
+		for (const a in attributes) {
 			rAttributes[a] = attributes[a].location;
 		}
 		return rAttributes;
@@ -3885,10 +3877,10 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @see setAttributes
 	 */
 	getAttributesInfo : function () {
-		var attributes  = this._attributes;
-		var attribute   = null;
-		var rAttributes = { };
-		for (var a in attributes) {
+		const attributes  = this._attributes;
+		let attribute   = null;
+		const rAttributes = { };
+		for (const a in attributes) {
 			attribute = attributes[a];
 			rAttributes[a] = {
 				index    : attribute.index,
@@ -3908,8 +3900,8 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @param {object} uniforms An object where each property has the name of the uniform to set and whose value is the uniform value.
 	 *
 	 * @example
-	 * var vertexShaderSrc = "" +
-	 * 	"..." + 
+	 * const vertexShaderSrc = "" +
+	 * 	"..." +
 	 * 	"uniform mat4  uMVP;      \n" +
 	 * 	"uniform float uScale;    \n" +
 	 * 	"uniform vec3  uLightPos; \n" +
@@ -3926,24 +3918,23 @@ SpiderGL.WebGL.Program.prototype = {
 	 * 	uOther    : 1.0 // this uniform is not set because it is not an active uniform
 	 * });
 	 *
-	 * @returns {bool} True if the uniforms have been set succesfully, false otherwise.
+	 * @returns {boolean} True if the uniforms have been set succesfully, false otherwise.
 	 */
 	setUniforms : function (uniforms) {
 		if (!uniforms) { return false; }
 
-		var gl  = this._gl;
-		var cb  = this._cb;
-		var dsa = this._dsa;
+		const gl  = this._gl;
+		const cb  = this._cb;
+		const dsa = this._dsa;
 
-		var h = this._h;
+		const h = this._h;
 
 		cb.pushProgram();
 		gl.useProgram(h);
 
-		var _uniforms = this._uniforms;
-		var uniform = null;
-		var value   = null;
-		for (var u in uniforms) {
+		const _uniforms = this._uniforms;
+		let uniform = null;
+		for (const u in uniforms) {
 			uniform = _uniforms[u];
 			if (uniform) {
 				uniform.setValue(dsa, h, uniforms[u]);
@@ -3964,9 +3955,9 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @see getUniformsInfo
 	 */
 	getUniformsNames : function () {
-		var uniforms  = this._uniforms;
-		var rUniforms = [ ];
-		for (var u in uniforms) {
+		const uniforms  = this._uniforms;
+		const rUniforms = [ ];
+		for (const u in uniforms) {
 			rUniforms.push(uniforms[u].name);
 		}
 		return rUniforms;
@@ -3978,11 +3969,11 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @returns {object} An object with one property for each active uniform. The name of the property is the name of the uniform and its value is the uniform value, which can be a number, an array or a typed array.
 	 */
 	getUniformsValues : function () {
-		var gl = this._gl;
-		var h = this._h;
-		var uniforms  = this._uniforms;
-		var rUniforms = { };
-		for (var u in uniforms) {
+		const gl = this._gl;
+		const h = this._h;
+		const uniforms  = this._uniforms;
+		const rUniforms = { };
+		for (const u in uniforms) {
 			rUniforms[u] = gl.getUniform(h, uniforms[u].location);
 		}
 		return rUniforms;
@@ -3994,11 +3985,10 @@ SpiderGL.WebGL.Program.prototype = {
 	 * @returns {object} An object where each property has the name of a program uniform and whose value is an object containing uinformation.
 	 */
 	getUniformsInfo : function () {
-		var uniforms  = this._uniforms;
-		var uniform   = null;
-		var value     = null;
-		var rUniforms = { };
-		for (var u in uniforms) {
+		const uniforms  = this._uniforms;
+		let uniform   = null;
+		const rUniforms = { };
+		for (const u in uniforms) {
 			uniform = uniforms[u];
 			rUniforms[u] = {
 				index    : uniform.index,
@@ -4052,7 +4042,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Program, SpiderGL.WebGL.ObjectGL);
  *
  * @augments SpiderGL.WebGL.ObjectGL
  *
- * @param {WebGLRenderingContext} gl A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
+ * @param {WebGLRenderingContext} glContext A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
  * @param {object} [options] Optional parameters.
  * @param {WebGLRenderbuffer} [options.handle] A WebGLRenderbuffer. If present, this object will be used as the wrapped WebGLRenderbuffer. Otherwise a new one will be created.
  * @param {number} [options.internalFormat] The WebGL enumeration specifying the renderbuffer internal format.
@@ -4060,7 +4050,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Program, SpiderGL.WebGL.ObjectGL);
  * @param {object} [options.height] The height of the renderbuffer.
  *
  * @example
- * var rb = new SpiderGL.WebGL.Renderbuffer(gl, {
+ * const rb = new SpiderGL.WebGL.Renderbuffer(gl, {
  * 	internalFormat : gl.RGBA,
  * 	width  : 800,
  * 	height : 600
@@ -4070,8 +4060,8 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Program, SpiderGL.WebGL.ObjectGL);
  * @see SpiderGL.WebGL.Framebuffer
  * @see SpiderGL.WebGL.ObjectGL
  */
-SpiderGL.WebGL.Renderbuffer = function (gl, options) {
-	if (!SpiderGL.WebGL.Context.isHijacked(gl)) { return null; }
+SpiderGL.WebGL.Renderbuffer = function (glContext, options) {
+	if (!SpiderGL.WebGL.Context.isHijacked(glContext)) { return null; }
 
 	if (SpiderGL.Type.instanceOf(h, WebGLRenderbuffer)) {
 		options = { handle : options };
@@ -4081,19 +4071,19 @@ SpiderGL.WebGL.Renderbuffer = function (gl, options) {
 		handle : null,
 	}, options);
 
-	SpiderGL.WebGL.ObjectGL.call(this, gl, SpiderGL.WebGL.Renderbuffer.TARGET, options);
+	SpiderGL.WebGL.ObjectGL.call(this, glContext, SpiderGL.WebGL.Renderbuffer.TARGET, options);
 	if (!!this._h && !!this._h._spidergl && (this._h._spidergl != this)) return this._h._spidergl;
 
-	var gl  = this._gl;
-	var cb  = this._cb;
-	var dsa = this._dsa;
+	const gl  = this._gl;
+	const cb  = this._cb;
+	const dsa = this._dsa;
 
-	var t = this._t;
-	var h = this._h;
+	const t = this._t;
+	let h = this._h;
 
-	var format = gl.NONE;
-	var width  = 0;
-	var height = 0;
+	let format = gl.NONE;
+	let width  = 0;
+	let height = 0;
 
 	if (h) {
 		cb.pushRenderbuffer(t);
@@ -4164,7 +4154,7 @@ SpiderGL.WebGL.Renderbuffer.prototype = {
 	 * Tests if the renderbuffer is ready to use.
 	 * A renderbuffer is considered ready if its width and height are greater than zero.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -4257,12 +4247,12 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Renderbuffer, SpiderGL.WebGL.ObjectGL);
  *
  * @augments SpiderGL.WebGL.ObjectGL
  *
- * @param {WebGLRenderingContext} gl A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
+ * @param {WebGLRenderingContext} glContext A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
  * @param {number} target Not used.
  * @param {number} type WebGL shader type.
  * @param {object} [options] Optional parameters.
  * @param {WebGLShader} [options.handle] If defined, the provided shader will be wrapped and its source code will be queried to the rendering context. Otherwise an internal shader will be created.
- * @param {bool} [options.autoCompile=SpiderGL.WebGL.Shader.DEFAULT_AUTO_COMPILE] If true, the shader is automatically compiled whenever its source code changes.
+ * @param {boolean} [options.autoCompile=SpiderGL.WebGL.Shader.DEFAULT_AUTO_COMPILE] If true, the shader is automatically compiled whenever its source code changes.
  * @param {string} [options.source] Shader source code. If autoCompile is true, the shader will be automatically compiled.
  *
  * @see autoCompile
@@ -4273,8 +4263,8 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Renderbuffer, SpiderGL.WebGL.ObjectGL);
  * @see SpiderGL.WebGL.Program
  * @see SpiderGL.WebGL.ObjectGL
  */
-SpiderGL.WebGL.Shader = function (gl, target, type, options) {
-	if (!SpiderGL.WebGL.Context.isHijacked(gl)) { return null; }
+SpiderGL.WebGL.Shader = function (glContext, target, type, options) {
+	if (!SpiderGL.WebGL.Context.isHijacked(glContext)) { return null; }
 
 	if (SpiderGL.Type.instanceOf(options, WebGLShader)) {
 		options = { handle : options };
@@ -4289,19 +4279,17 @@ SpiderGL.WebGL.Shader = function (gl, target, type, options) {
 		autoCompile : SpiderGL.WebGL.Shader.DEFAULT_AUTO_COMPILE
 	}, options);
 
-	SpiderGL.WebGL.ObjectGL.call(this, gl, target, options);
+	SpiderGL.WebGL.ObjectGL.call(this, glContext, target, options);
 	if (!!this._h && !!this._h._spidergl && (this._h._spidergl != this)) return this._h._spidergl;
 
-	var gl  = this._gl;
-	var cb  = this._cb;
-	var dsa = this._dsa;
+	const gl  = this._gl;
 
-	var source   = "";
-	var compiled = false;
-	var deleted  = false;
-	var log      = "";
+	let source   = "";
+	let compiled = false;
+	let deleted  = false;
+	let log      = "";
 
-	var h = this._h;
+	let h = this._h;
 	if (h) {
 		source   = gl.getShaderSource(h);
 		if (!source) { source = ""; }
@@ -4338,7 +4326,7 @@ SpiderGL.WebGL.Shader.TARGET = WebGLRenderingContext.NONE;
 /**
  * Default value for SpiderGL.WebGL.Shader#autoCompile.
  *
- * @type bool
+ * @type boolean
  *
  * @default true
  */
@@ -4380,8 +4368,8 @@ SpiderGL.WebGL.Shader.prototype = {
 	},
 
 	_postCompile : function () {
-		var gl = this._gl;
-		var h = this._h;
+		const gl = this._gl;
+		const h = this._h;
 		this._compiled = !!gl.getShaderParameter(h, gl.COMPILE_STATUS);
 		this._log      = gl.getShaderInfoLog(h);
 		if (!this._log) { this._log = ""; }
@@ -4395,7 +4383,7 @@ SpiderGL.WebGL.Shader.prototype = {
 	 * Tests if the shader is ready to use.
 	 * A shader is considered ready if it is successfully compiled.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 *
@@ -4408,7 +4396,7 @@ SpiderGL.WebGL.Shader.prototype = {
 	/**
 	 * Tests if the shader is successfully compiled.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 *
@@ -4434,7 +4422,7 @@ SpiderGL.WebGL.Shader.prototype = {
 	/**
 	 * Gets/Sets if the shader will be compiled automatically whenever the source code is changed.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @see source
 	 * @see compile
@@ -4452,18 +4440,18 @@ SpiderGL.WebGL.Shader.prototype = {
 	 * If compile is not specified and autoCompile is true, the shader is automatically compiled.
 	 *
 	 * @param {string} src The shader source code.
-	 * @param {bool} [compile] If specified, overrides the value of autoCompile.
+	 * @param {boolean} [compile] If specified, overrides the value of autoCompile.
 	 *
 	 * @see compile
 	 * @see autoCompile
 	 */
 	setSource : function (src, compile) {
-		var gl = this._gl;
-		var h = this._h;
+		const gl = this._gl;
+		const h = this._h;
 
 		gl.shaderSource(h, src);
 
-		var c = SpiderGL.Utility.getDefaultValue(compile, this._autoCompile);
+		const c = SpiderGL.Utility.getDefaultValue(compile, this._autoCompile);
 		if (!c) { true; }
 		return this.compile();
 	},
@@ -4489,7 +4477,7 @@ SpiderGL.WebGL.Shader.prototype = {
 	/**
 	 * Compiles the shader.
 	 *
-	 * @returns {bool} True if the shader has been successfully compiled, false otherwise.
+	 * @returns {boolean} True if the shader has been successfully compiled, false otherwise.
 	 *
 	 * @see source
 	 * @see autoCompile
@@ -4634,7 +4622,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.FragmentShader, SpiderGL.WebGL.Shader);
  *
  * @augments SpiderGL.WebGL.ObjectGL
  *
- * @param {WebGLRenderingContext} gl A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
+ * @param {WebGLRenderingContext} glContext A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
  * @param {number} target Texture-specific target.
  * @param {object} [options] Optional parameters.
  * @param {WebGLTexture} [options.handle] If defined, the provided texture will be wrapped and its sampling parameters will be queried to the rendering context; as texture image base level width and height can not be retrieved, they should be specified with the width and height optional parameters. If handle is not specified, an internal texture will be created.
@@ -4650,12 +4638,12 @@ SpiderGL.Type.extend(SpiderGL.WebGL.FragmentShader, SpiderGL.WebGL.Shader);
  * @param {number} [options.minFilter=SpiderGL.WebGL.Texture.DEFAULT_MIN_FILTER] Texture minnification filter (see {@link SpiderGL.WebGL.Texture#minFilter}).
  * @param {number} [options.wrapS=SpiderGL.WebGL.Texture.DEFAULT_WRAP_S] Texture horizontal wrap mode (see {@link SpiderGL.WebGL.Texture#wrapS}).
  * @param {number} [options.wrapT=SpiderGL.WebGL.Texture.DEFAULT_WRAP_T] Texture vertical wrap mode (see {@link SpiderGL.WebGL.Texture#wrapT}).
- * @param {bool} [options.autoMipmap=SpiderGL.WebGL.Texture.DEFAULT_AUTO_GENERATE_MIPMAP] If true, mipmaps are automatically generated when calling setImage or setSubImage (see {@link SpiderGL.WebGL.Texture#autoMipmap}).
- * @param {bool} [options.generateMipmap] If specified, overrides autoMipmap for this call.
- * @param {bool} [options.flipYPolicy=SpiderGL.WebGL.Texture.DEFAULT_UNPACK_FLIP_Y] WebGL unpack flip Y policy (see SpiderGL.WebGL.Texture#flipYPolicy).
- * @param {bool} [options.flipY] If specified, overrides flipYPolicy for this call.
- * @param {bool} [options.premultiplyAlphaPolicy=SpiderGL.WebGL.Texture.DEFAULT_UNPACK_PREMULTIPLY_ALPHA] WebGL unpack premultiply alpha policy (see SpiderGL.WebGL.Texture#premultiplyAlphaPolicy).
- * @param {bool} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy for this call.
+ * @param {boolean} [options.autoMipmap=SpiderGL.WebGL.Texture.DEFAULT_AUTO_GENERATE_MIPMAP] If true, mipmaps are automatically generated when calling setImage or setSubImage (see {@link SpiderGL.WebGL.Texture#autoMipmap}).
+ * @param {boolean} [options.generateMipmap] If specified, overrides autoMipmap for this call.
+ * @param {boolean} [options.flipYPolicy=SpiderGL.WebGL.Texture.DEFAULT_UNPACK_FLIP_Y] WebGL unpack flip Y policy (see SpiderGL.WebGL.Texture#flipYPolicy).
+ * @param {boolean} [options.flipY] If specified, overrides flipYPolicy for this call.
+ * @param {boolean} [options.premultiplyAlphaPolicy=SpiderGL.WebGL.Texture.DEFAULT_UNPACK_PREMULTIPLY_ALPHA] WebGL unpack premultiply alpha policy (see SpiderGL.WebGL.Texture#premultiplyAlphaPolicy).
+ * @param {boolean} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy for this call.
  * @param {number} [options.colorspaceConversionPolicy=SpiderGL.WebGL.Texture.DEFAULT_UNPACK_COLORSPACE_CONVERSION] WebGL unpack colorspace conversion policy (see SpiderGL.WebGL.Texture#colorspaceConversionPolicy).
  * @param {number} [options.colorspaceConversion] If specified, overrides colorspaceConversionPolicy for this call.
  * @param {function} [options.onCancel] If url is specified, this function will be called if image data loading is cancelled.
@@ -4664,7 +4652,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.FragmentShader, SpiderGL.WebGL.Shader);
  * @param {function} [options.onSuccess] If url is specified, this function will be called when image data has been successfully loaded.
  *
  * @example
- * var tex1 = new SpiderGL.WebGL.Texture2D(gl, {
+ * const tex1 = new SpiderGL.WebGL.Texture2D(gl, {
  * 	internalFormat : gl.RGBA,              // if omitted, defaults to SpiderGL.WebGL.Texture.DEFAULT_INTERNAL_FORMAT
  * 	width          : 256,
  * 	height         : 128,
@@ -4686,7 +4674,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.FragmentShader, SpiderGL.WebGL.Shader);
  * 	colorspaceConversion       : false     // if specified, overrides colorspaceConversionPolicy for this implicit call to setImage
  * });
  *
- * var tex2 = new SpiderGL.WebGL.TextureCubeMap(gl, {
+ * const tex2 = new SpiderGL.WebGL.TextureCubeMap(gl, {
  * 	url : [
  * 		http://someurl.org/cubemap_pos_x.png,
  * 		http://someurl.org/cubemap_neg_x.png,
@@ -4708,8 +4696,8 @@ SpiderGL.Type.extend(SpiderGL.WebGL.FragmentShader, SpiderGL.WebGL.Shader);
  * @see SpiderGL.WebGL.Framebuffer
  * @see SpiderGL.WebGL.ObjectGL
  */
-SpiderGL.WebGL.Texture = function (gl, target, options) {
-	if (!SpiderGL.WebGL.Context.isHijacked(gl)) { return null; }
+SpiderGL.WebGL.Texture = function (glContext, target, options) {
+	if (!SpiderGL.WebGL.Context.isHijacked(glContext)) { return null; }
 
 	if (SpiderGL.Type.instanceOf(options, WebGLTexture)) {
 		options = { handle : options };
@@ -4728,20 +4716,19 @@ SpiderGL.WebGL.Texture = function (gl, target, options) {
 		premultiplyAlphaPolicy     : SpiderGL.WebGL.Context.DEFAULT_UNPACK_PREMULTIPLY_ALPHA,
 		colorspaceConversionPolicy : SpiderGL.WebGL.Context.DEFAULT_UNPACK_COLORSPACE_CONVERSION,
 		autoMipmap                 : SpiderGL.WebGL.Texture.DEFAULT_AUTO_GENERATE_MIPMAP,
-		format                     : gl.NONE,
+		format                     : glContext.NONE,
 		width                      : 0,
 		height                     : 0
 	}, options);
 
-	SpiderGL.WebGL.ObjectGL.call(this, gl, target, options);
+	SpiderGL.WebGL.ObjectGL.call(this, glContext, target, options);
 	if (!!this._h && !!this._h._spidergl && (this._h._spidergl != this)) return this._h._spidergl;
 
-	var gl  = this._gl;
-	var cb  = this._cb;
-	var dsa = this._dsa;
+	const gl  = this._gl;
+	const cb  = this._cb;
 
-	var t = this._t;
-	var h = this._h;
+	const t = this._t;
+	let h = this._h;
 
 	if (!h) {
 		h = gl.createTexture();
@@ -4793,7 +4780,7 @@ SpiderGL.WebGL.Texture.DEFAULT_FORMAT = WebGLRenderingContext.RGBA;
 /**
  * Default value for SpiderGL.WebGL.Texture#autoMipmap
  *
- * @type bool
+ * @type boolean
  *
  * @default false
  */
@@ -4959,7 +4946,7 @@ SpiderGL.WebGL.Texture.prototype = {
 	},
 
 	_gl_texImage2D : function (target) {
-		var n = arguments.length;
+		const n = arguments.length;
 		if (n === 6) {
 			if (arguments[1] === 0) {
 				this._format = arguments[2];
@@ -4988,7 +4975,7 @@ SpiderGL.WebGL.Texture.prototype = {
 	},
 
 	_setTexParameter : function (pname, param) {
-		var gl = this._gl;
+		const gl = this._gl;
 
 		switch (pname) {
 			case gl.TEXTURE_MAG_FILTER : this._magFilter = param; break;
@@ -5022,10 +5009,10 @@ SpiderGL.WebGL.Texture.prototype = {
 			onSuccess            : null
 		}, options);
 
-		var isURL     = !!options.url;
-		var isData    = false;
+		const isURL     = !!options.url;
+		let isData    = false;
 		if (!isURL) { isData = (!options.data || SpiderGL.Type.isTypedArray(options.data)); /* (!options.data || SpiderGL.Type.instanceOf(options.data, ArrayBufferView)) */ }
-		var isElement = false;
+		let isElement = false;
 		if (!isURL && !isData) {
 			// [WORKAROUND]
 			// Firefox does not define ImageData
@@ -5038,19 +5025,19 @@ SpiderGL.WebGL.Texture.prototype = {
 			}
 		}
 
-		var gl  = this._gl;
-		var cb  = this._cb;
-		var dsa = this._dsa;
+		const gl  = this._gl;
+		const cb  = this._cb;
+		const dsa = this._dsa;
 
-		var t = target;
-		var h = this._h;
+		const t = target;
+		const h = this._h;
 
-		var userFlipY                = -1;
-		var flipY                    = -1;
-		var userPremultiplyAlpha     = -1;
-		var premultiplyAlpha         = -1;
-		var userColorspaceConversion = -1;
-		var colorspaceConversion     = -1;
+		let userFlipY                = -1;
+		let flipY                    = -1;
+		let userPremultiplyAlpha     = -1;
+		let premultiplyAlpha         = -1;
+		let userColorspaceConversion = -1;
+		let colorspaceConversion     = -1;
 
 		if (isData || isElement) {
 			userFlipY = options.flipY;
@@ -5075,10 +5062,10 @@ SpiderGL.WebGL.Texture.prototype = {
 			}
 		}
 
-		var imageUpdated = false;
+		let imageUpdated = false;
 
 		if (isURL) {
-			var opts = {
+			const opts = {
 				internalFormat       : options.internalFormat,
 				border               : options.border,
 				xoffset              : options.xoffset,
@@ -5093,10 +5080,10 @@ SpiderGL.WebGL.Texture.prototype = {
 				data                 : null
 			};
 
-			var that = this;
-			var onSuccess = options.onSuccess;
+			const that = this;
+			const onSuccess = options.onSuccess;
 
-			var req = new SpiderGL.IO.ImageRequest(options.url, {
+			const req = new SpiderGL.IO.ImageRequest(options.url, {
 				onCancel   : options.onCancel,
 				onError    : options.onError,
 				onProgress : options.onProgress,
@@ -5171,7 +5158,7 @@ SpiderGL.WebGL.Texture.prototype = {
 	 * Tests if the texture is ready to use.
 	 * A texture is considered ready if all its associated images (one for 2D textures, six for cube maps) have width and height greater than zero.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @readonly
 	 */
@@ -5183,11 +5170,11 @@ SpiderGL.WebGL.Texture.prototype = {
 	 * Gets/Sets the flip Y policy.
 	 * It specifies the image data vertical flipping policy when unpacking pixel data in setData or setSubData.
 	 * If set to true, the WebGL pixel unpack parameter WebGLRenderingContext.UNPACK_FLIP_Y will be set to true
-	 * If set to false, the WebGL pixel unpack parameter WebGLRenderingContext.UNPACK_FLIP_Y will be set to false 
+	 * If set to false, the WebGL pixel unpack parameter WebGLRenderingContext.UNPACK_FLIP_Y will be set to false
 	 * In either case, the unpack parameter will be restored.
 	 * If set to SpiderGL.Core.DONT_CARE, the current WebGLRenderingContext setting will be used (i.e. nothing will be changed).
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @default SpiderGL.WebGL.Context.DEFAULT_UNPACK_FLIP_Y
 	 */
@@ -5203,11 +5190,11 @@ SpiderGL.WebGL.Texture.prototype = {
 	 * Gets/Sets the premultiply alpha policy.
 	 * It specifies the image data premultiply alpha policy when unpacking pixel data in setData or setSubData.
 	 * If set to true, the WebGL pixel unpack parameter WebGLRenderingContext.UNPACK_PREMULTIPLY_ALPHA will be set to true
-	 * If set to false, the WebGL pixel unpack parameter WebGLRenderingContext.UNPACK_PREMULTIPLY_ALPHA will be set to false 
+	 * If set to false, the WebGL pixel unpack parameter WebGLRenderingContext.UNPACK_PREMULTIPLY_ALPHA will be set to false
 	 * In either case, the unpack parameter will be restored after image data has been set
 	 * If set to SpiderGL.Core.DONT_CARE, the current WebGLRenderingContext setting will be used (i.e. nothing will be changed).
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @default SpiderGL.WebGL.Context.DEFAULT_UNPACK_PREMULTIPLY_ALPHA
 	 */
@@ -5240,7 +5227,7 @@ SpiderGL.WebGL.Texture.prototype = {
 	/**
 	 * Gets/Sets the automatic mipmap generation.
 	 *
-	 * @type bool
+	 * @type boolean
 	 *
 	 * @default SpiderGL.WebGL.Texture.DEFAULT_AUTO_GENERATE_MIPMAP
 	 */
@@ -5356,17 +5343,17 @@ SpiderGL.WebGL.Texture.prototype = {
 	setSampler : function (sampler) {
 		if (!sampler) return false;
 
-		var gl  = this._gl;
-		var cb  = this._cb;
-		var dsa = this._dsa;
+		const gl  = this._gl;
+		const cb  = this._cb;
+		const dsa = this._dsa;
 
-		var t = this._t;
-		var h = this._h;
+		const t = this._t;
+		const h = this._h;
 
 		cb.pushTexture(t);
 		gl.bindTexture(t, h);
 
-		var p = 0;
+		let p = 0;
 
 		if ("magFilter" in sampler) {
 			p = SpiderGL.Utility.getDefaultValue(sampler.magFilter, SpiderGL.WebGL.Texture.DEFAULT_MAG_FILTER);
@@ -5433,9 +5420,9 @@ SpiderGL.WebGL.Texture.prototype = {
 	 * @see unbind
 	 */
 	bind : function (unit) {
-		var gl  = this._gl;
-		var cb  = this._cb;
-		var dsa = this._dsa;
+		const gl  = this._gl;
+		const cb  = this._cb;
+		const dsa = this._dsa;
 		if (typeof unit == "undefined") {
 			gl.bindTexture(this._t, this._h);
 		}
@@ -5453,9 +5440,9 @@ SpiderGL.WebGL.Texture.prototype = {
 	 * @see bind
 	 */
 	unbind : function (unit) {
-		var gl  = this._gl;
-		var cb  = this._cb;
-		var dsa = this._dsa;
+		const gl  = this._gl;
+		const cb  = this._cb;
+		const dsa = this._dsa;
 		if (typeof unit == "undefined") {
 			gl.bindTexture(this._t, null);
 		}
@@ -5503,8 +5490,8 @@ SpiderGL.WebGL.Texture2D = function (gl, options) {
 SpiderGL.WebGL.Texture2D.TARGET = WebGLRenderingContext.TEXTURE_2D;
 
 SpiderGL.WebGL.Texture2D.unbind = function (gl, unit) {
-	var cb  = gl.getExtension("SGL_current_binding");
-	var dsa = gl.getExtension("SGL_direct_state_access");
+	const cb  = gl.getExtension("SGL_current_binding");
+	const dsa = gl.getExtension("SGL_direct_state_access");
 	if (typeof unit == "undefined") {
 		gl.bindTexture(SpiderGL.WebGL.Texture2D.TARGET, null);
 	}
@@ -5526,9 +5513,9 @@ SpiderGL.WebGL.Texture2D.prototype = {
 	 * @param {number} [options.border=SpiderGL.WebGL.Texture.DEFAULT_BORDER] Texture border.
 	 * @param {number} [options.format=SpiderGL.WebGL.Texture.DEFAULT_FORMAT] The format parameter used for WebGLRenderingContext.texImage2D.
 	 * @param {number} [options.type=SpiderGL.WebGL.Texture.DEFAULT_TYPE] The type parameter used for WebGLRenderingContext.texImage2D.
-	 * @param {bool} [options.generateMipmap] If specified, overrides autoMipmap.
-	 * @param {bool} [options.flipY] If specified, overrides flipYPolicy.
-	 * @param {bool} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
+	 * @param {boolean} [options.generateMipmap] If specified, overrides autoMipmap.
+	 * @param {boolean} [options.flipY] If specified, overrides flipYPolicy.
+	 * @param {boolean} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
 	 * @param {number} [options.colorspaceConversion] If specified, overrides colorspaceConversionPolicy.
 	 * @param {function} [options.onAbort] If url is specified, this function will be called if image data loading is aborted.
 	 * @param {function} [options.onError] If url is specified, this function will be called if an error occurs when loading image data.
@@ -5553,9 +5540,9 @@ SpiderGL.WebGL.Texture2D.prototype = {
 	 * @param {number} [options.border=SpiderGL.WebGL.Texture.DEFAULT_BORDER] Texture border.
 	 * @param {number} [options.format=SpiderGL.WebGL.Texture.DEFAULT_FORMAT] The format parameter used for WebGLRenderingContext.texSubImage2D.
 	 * @param {number} [options.type=SpiderGL.WebGL.Texture.DEFAULT_TYPE] The type parameter used for WebGLRenderingContext.texSubImage2D.
-	 * @param {bool} [options.generateMipmap] If specified, overrides autoMipmap.
-	 * @param {bool} [options.flipY] If specified, overrides flipYPolicy.
-	 * @param {bool} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
+	 * @param {boolean} [options.generateMipmap] If specified, overrides autoMipmap.
+	 * @param {boolean} [options.flipY] If specified, overrides flipYPolicy.
+	 * @param {boolean} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
 	 * @param {number} [options.colorspaceConversion] If specified, overrides colorspaceConversionPolicy.
 	 * @param {function} [options.onAbort] If url is specified, this function will be called if image data loading is aborted.
 	 * @param {function} [options.onError] If url is specified, this function will be called if an error occurs when loading image data.
@@ -5601,24 +5588,24 @@ SpiderGL.WebGL.TextureCubeMap = function (gl, options) {
 		options = { url : options };
 	}
 
-	var faceTargets = SpiderGL.WebGL.TextureCubeMap._faceTargets;
+	const faceTargets = SpiderGL.WebGL.TextureCubeMap._faceTargets;
 
 	if (options.url) {
-		var urls = options.url;
-		for (var i=0; i<6; ++i) {
+		const urls = options.url;
+		for (let i=0; i<6; ++i) {
 			options.url = urls[i];
 			this.setImage(faceTargets[i], options);
 		}
 	}
 	else if (options.data) {
-		var datas = options.data;
-		for (var i=0; i<6; ++i) {
+		const datas = options.data;
+		for (let i=0; i<6; ++i) {
 			options.data = datas[i];
 			this.setImage(faceTargets[i], options);
 		}
 	}
 	else if ((options.width > 0) && (options.height > 0)) {
-		for (var i=0; i<6; ++i) {
+		for (let i=0; i<6; ++i) {
 			this.setImage(faceTargets[i], options);
 		}
 	}
@@ -5627,8 +5614,8 @@ SpiderGL.WebGL.TextureCubeMap = function (gl, options) {
 SpiderGL.WebGL.TextureCubeMap.TARGET = WebGLRenderingContext.TEXTURE_CUBE_MAP;
 
 SpiderGL.WebGL.TextureCubeMap.unbind = function (gl, unit) {
-	var cb  = gl.getExtension("SGL_current_binding");
-	var dsa = gl.getExtension("SGL_direct_state_access");
+	const cb  = gl.getExtension("SGL_current_binding");
+	const dsa = gl.getExtension("SGL_direct_state_access");
 	if (typeof unit == "undefined") {
 		gl.bindTexture(SpiderGL.WebGL.TextureCubeMap.TARGET, null);
 	}
@@ -5659,9 +5646,9 @@ SpiderGL.WebGL.TextureCubeMap.prototype = {
 	 * @param {number} [options.border=SpiderGL.WebGL.Texture.DEFAULT_BORDER] Texture border.
 	 * @param {number} [options.format=SpiderGL.WebGL.Texture.DEFAULT_FORMAT] The format parameter used for WebGLRenderingContext.texImage2D.
 	 * @param {number} [options.type=SpiderGL.WebGL.Texture.DEFAULT_TYPE] The type parameter used for WebGLRenderingContext.texImage2D.
-	 * @param {bool} [options.generateMipmap] If specified, overrides autoMipmap.
-	 * @param {bool} [options.flipY] If specified, overrides flipYPolicy.
-	 * @param {bool} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
+	 * @param {boolean} [options.generateMipmap] If specified, overrides autoMipmap.
+	 * @param {boolean} [options.flipY] If specified, overrides flipYPolicy.
+	 * @param {boolean} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
 	 * @param {number} [options.colorspaceConversion] If specified, overrides colorspaceConversionPolicy.
 	 * @param {function} [options.onAbort] If url is specified, this function will be called if image data loading is aborted.
 	 * @param {function} [options.onError] If url is specified, this function will be called if an error occurs when loading image data.
@@ -5672,9 +5659,9 @@ SpiderGL.WebGL.TextureCubeMap.prototype = {
 	 */
 	setImage : function (face, options) {
 		/*
-		var b = SpiderGL.WebGL.TextureCubeMap._faceBits[face];
+		const b = SpiderGL.WebGL.TextureCubeMap._faceBits[face];
 		if (!b) return false;
-		var r = this._setImage(face, options);
+		const r = this._setImage(face, options);
 		if (r) { this._missingFaces &= ~b; }
 		return r;
 		*/
@@ -5694,9 +5681,9 @@ SpiderGL.WebGL.TextureCubeMap.prototype = {
 	 * @param {number} [options.border=SpiderGL.WebGL.Texture.DEFAULT_BORDER] Texture border.
 	 * @param {number} [options.format=SpiderGL.WebGL.Texture.DEFAULT_FORMAT] The format parameter used for WebGLRenderingContext.texSubImage2D.
 	 * @param {number} [options.type=SpiderGL.WebGL.Texture.DEFAULT_TYPE] The type parameter used for WebGLRenderingContext.texSubImage2D.
-	 * @param {bool} [options.generateMipmap] If specified, overrides autoMipmap.
-	 * @param {bool} [options.flipY] If specified, overrides flipYPolicy.
-	 * @param {bool} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
+	 * @param {boolean} [options.generateMipmap] If specified, overrides autoMipmap.
+	 * @param {boolean} [options.flipY] If specified, overrides flipYPolicy.
+	 * @param {boolean} [options.premultiplyAlpha] If specified, overrides premultiplyAlphaPolicy.
 	 * @param {number} [options.colorspaceConversion] If specified, overrides colorspaceConversionPolicy.
 	 * @param {function} [options.onAbort] If url is specified, this function will be called if image data loading is aborted.
 	 * @param {function} [options.onError] If url is specified, this function will be called if an error occurs when loading image data.
