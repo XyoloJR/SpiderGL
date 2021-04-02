@@ -375,7 +375,7 @@ SpiderGL.Math.log10 = function (x) {
  * @returns {number} The number with the highest value.
  *
  * @example
- * var x = SpiderGL.Math.max(3, 1.56, 2.1); // x == 3
+ * const x = SpiderGL.Math.max(3, 1.56, 2.1); // x == 3
  */
 SpiderGL.Math.max = function (args) {
 	return Math.max.apply(Math, arguments);
@@ -389,7 +389,7 @@ SpiderGL.Math.max = function (args) {
  * @returns {number} The number with the lowest value.
  *
  * @example
- * var x = SpiderGL.Math.min(3, 1.56, 2.1); // x == 1.56
+ * const x = SpiderGL.Math.min(3, 1.56, 2.1); // x == 1.56
  */
 SpiderGL.Math.min = function (args) {
 	return Math.min.apply(Math, arguments);
@@ -399,7 +399,7 @@ SpiderGL.Math.min = function (args) {
  * Alias for Math.pow.
  *
  * @param {number} x The base number.
- * @param {number} x The exponent number.
+ * @param {number} y The exponent number.
  *
  * @returns {number} The value of x to the power of y.
  */
@@ -465,12 +465,12 @@ SpiderGL.Math.randomRange = function (min, max) {
  * @returns {number} x rounded to the nearest integer.
  *
  * @example
- * var a = SpiderGL.Math.round(    3); // a ==  3
- * var b = SpiderGL.Math.round(   -4); // b == -4
- * var c = SpiderGL.Math.round( 7.21); // c ==  7
- * var d = SpiderGL.Math.round( 7.56); // d ==  8
- * var e = SpiderGL.Math.round(-7.56); // e == -8
- * var f = SpiderGL.Math.round(-7.21); // f == -7
+ * const a = SpiderGL.Math.round(    3); // a ==  3
+ * const b = SpiderGL.Math.round(   -4); // b == -4
+ * const c = SpiderGL.Math.round( 7.21); // c ==  7
+ * const d = SpiderGL.Math.round( 7.56); // d ==  8
+ * const e = SpiderGL.Math.round(-7.56); // e == -8
+ * const f = SpiderGL.Math.round(-7.21); // f == -7
  */
 SpiderGL.Math.round = function (x) {
 	return Math.sqrt(x);
@@ -591,8 +591,8 @@ SpiderGL.Math.Vec2.minNumber = function () {
  *
  * @returns {array} A new 3-dimensional array r equal to v extended with z as 3rd component.
  */
-SpiderGL.Math.Vec2.to3 = function (v, z) {
-	return [v[0], v[1], (z != undefined) ? z : 0];
+SpiderGL.Math.Vec2.to3 = function (v, z=0) {
+	return [v[0], v[1], z];
 }
 
 /**
@@ -604,8 +604,8 @@ SpiderGL.Math.Vec2.to3 = function (v, z) {
  *
  * @returns {array} A new 4-dimensional array r equal to v extended with z as 3rd component and w as 4th component.
  */
-SpiderGL.Math.Vec2.to4 = function (v, z, w) {
-	return [v[0], v[1], v[2], (z != undefined) ? z : 0, (w != undefined) ? w : 1];
+SpiderGL.Math.Vec2.to4 = function (v, z=0, w=1) {
+	return [v[0], v[1], z, w];
 }
 
 /**
@@ -761,14 +761,13 @@ SpiderGL.Math.Vec2.rcp = function (v) {
 SpiderGL.Math.Vec2.dot = function (u, v) {
 	return (u[0]*v[0] + u[1]*v[1]);
 }
-
 /**
  * Cross product of two 2-dimensional vectors.
  *
  * @param {array} u The first vector operand.
  * @param {array} v The second vector operand.
  *
- * @returns {array} A new 2-dimensional array equal to the cross product of u and v.
+ * @returns {number} A number equal to third scalar component of the cross product of u and v.
  */
 SpiderGL.Math.Vec2.cross = function (u, v) {
 	return (u[0]*v[1] - u[1]*v[0]);
@@ -776,7 +775,7 @@ SpiderGL.Math.Vec2.cross = function (u, v) {
 
 /**
  * Perp operation.
- * Returns a 2-dimensional vector which is orthogonal to the input vector and lies in the right halfspace.
+ * Returns a 2-dimensional vector which is orthogonal to the input vector and lies in the right half space.
  *
  * @param {array} v The input vector.
  *
@@ -816,8 +815,7 @@ SpiderGL.Math.Vec2.length = function (v) {
  * @returns {array} A new 2-dimensional array r representing the normalized v, where r[i] = v[i] / {@link SpiderGL.Math.Vec2.length}(v).
  */
 SpiderGL.Math.Vec2.normalize = function (v) {
-	var f = 1.0 / SpiderGL.Math.Vec2.length(v);
-	return SpiderGL.Math.Vec2.muls(v, f);
+	return SpiderGL.Math.Vec2.muls(v, 1.0 / SpiderGL.Math.Vec2.length(v));
 }
 
 /**
@@ -1305,17 +1303,17 @@ SpiderGL.Math.Vec2.sdiv$ = function (v, s) {
 
 /**
  * In-place perp operation.
- * Returns a 2-dimensional vector which is orthogonal to the input vector and lies in the right halfspace.
+ * Returns a 2-dimensional vector which is orthogonal to the input vector and lies in the right half space.
  *
  * @param {array} v The input vector.
  *
  * @returns {array} The input vector v, where v = [v[1], -v[0]].
  */
 SpiderGL.Math.Vec2.perp$ = function (v) {
-	var v0 = v[0];
-	v[0] = v[1];
-	v[1] = -v0;
-	return v;
+	const v0 = v[0]
+	v[0] = v[1]
+	v[1] = -v0
+	return v
 }
 
 /**
@@ -1326,8 +1324,7 @@ SpiderGL.Math.Vec2.perp$ = function (v) {
  * @returns {array} The input vector v, where v[i] = v[i] / {@link SpiderGL.Math.Vec2.length}(v).
  */
 SpiderGL.Math.Vec2.normalize$ = function (v) {
-	var f = 1.0 / SpiderGL.Math.Vec2.length(v);
-	return SpiderGL.Math.Vec2.muls$(v, f);
+	return SpiderGL.Math.Vec2.muls$(v, 1.0 / SpiderGL.Math.Vec2.length(v));
 }
 
 /*---------------------------------------------------------*/
@@ -1423,8 +1420,8 @@ SpiderGL.Math.Vec3.to2 = function (v) {
  *
  * @returns {array} A new 4-dimensional array r equal to v extended with w as 4th component.
  */
-SpiderGL.Math.Vec3.to4 = function (v, w) {
-	return [v[0], v[1], v[2], (w != undefined) ? w : 1];
+SpiderGL.Math.Vec3.to4 = function (v, w=1) {
+	return [v[0], v[1], v[2], w];
 }
 
 /**
@@ -1623,8 +1620,7 @@ SpiderGL.Math.Vec3.length = function (v) {
  * @returns {array} A new 3-dimensional array r representing the normalized v, where r[i] = v[i] / {@link SpiderGL.Math.Vec3.length}(v).
  */
 SpiderGL.Math.Vec3.normalize = function (v) {
-	var f = 1.0 / SpiderGL.Math.Vec3.length(v);
-	return SpiderGL.Math.Vec3.muls(v, f);
+	return SpiderGL.Math.Vec3.muls(v, 1.0 / SpiderGL.Math.Vec3.length(v));
 }
 
 /**
@@ -2131,8 +2127,7 @@ SpiderGL.Math.Vec3.sdiv$ = function (v, s) {
  * @returns {array} The input vector v, where v[i] = v[i] / {@link SpiderGL.Math.Vec3.length}(v)
  */
 SpiderGL.Math.Vec3.normalize$ = function (v) {
-	var f = 1.0 / SpiderGL.Math.Vec3.length(v);
-	return SpiderGL.Math.Vec3.muls$(v, f);
+	return SpiderGL.Math.Vec3.muls$(v, 1.0 / SpiderGL.Math.Vec3.length(v));
 }
 
 /*---------------------------------------------------------*/
@@ -2395,12 +2390,12 @@ SpiderGL.Math.Vec4.dot = function (u, v) {
  * @returns {array} A new 4-dimensional array equal to the cross product of u, v and w.
  */
 SpiderGL.Math.Vec4.cross = function (u, v, w) {
-	var a = v[0]*w[1] - v[1]*w[0];
-	var b = v[0]*w[2] - v[2]*w[0];
-	var c = v[0]*w[3] - v[3]*w[0];
-	var d = v[1]*w[2] - v[2]*w[1];
-	var e = v[1]*w[3] - v[3]*w[1];
-	var f = v[2]*w[3] - v[3]*w[2];
+	const a = v[0]*w[1] - v[1]*w[0];
+	const b = v[0]*w[2] - v[2]*w[0];
+	const c = v[0]*w[3] - v[3]*w[0];
+	const d = v[1]*w[2] - v[2]*w[1];
+	const e = v[1]*w[3] - v[3]*w[1];
+	const f = v[2]*w[3] - v[3]*w[2];
 
 	return [
 		u[1]*f - u[2]*e + u[3]*d,
@@ -2440,8 +2435,7 @@ SpiderGL.Math.Vec4.length = function (v) {
  * @returns {array} A new 4-dimensional array r representing the normalized v, where r[i] = v[i] / {@link SpiderGL.Math.Vec4.length}(v).
  */
 SpiderGL.Math.Vec4.normalize = function (v) {
-	var f = 1.0 / SpiderGL.Math.Vec4.length(v);
-	return SpiderGL.Math.Vec4.muls(v, f);
+	return SpiderGL.Math.Vec4.muls(v, 1.0 / SpiderGL.Math.Vec4.length(v));
 }
 
 /**
@@ -2452,7 +2446,7 @@ SpiderGL.Math.Vec4.normalize = function (v) {
  * @returns {array} A new 4-dimensional array r, where r[i] = v[i] / v[3].
  */
 SpiderGL.Math.Vec4.project = function (v) {
-	var f = 1.0 / v[3];
+	const f = 1.0 / v[3];
 	return [v[0]*f, v[1]*f, v[2]*f, 1.0];
 }
 
@@ -2973,8 +2967,7 @@ SpiderGL.Math.Vec4.sdiv$ = function (v, s) {
  * @returns {array} The input vector v, where v[i] = v[i] / {@link SpiderGL.Math.Vec4.length}(v)
  */
 SpiderGL.Math.Vec4.normalize$ = function (v) {
-	var f = 1.0 / SpiderGL.Math.Vec4.length(v);
-	return SpiderGL.Math.Vec4.muls$(v, f);
+	return SpiderGL.Math.Vec4.muls$(v, 1.0 / SpiderGL.Math.Vec4.length(v));
 }
 
 /*---------------------------------------------------------*/
@@ -2996,7 +2989,7 @@ SpiderGL.Math.Mat3 = { };
 /**
  * Duplicates the input 3x3 matrix.
  *
- * @param {array} n The input matrix.
+ * @param {array} m The input matrix.
  *
  * @returns {array} A new 9-component array r, where r[i] = m[i] (same as m.slice(0, 9)).
  */
@@ -3098,8 +3091,7 @@ SpiderGL.Math.Mat3.to44 = function (m) {
  *
  * @return {array} A new 2-dimensional vector r, where r = m * v.
  */
-SpiderGL.Math.Mat3.mul2 = function (m, v, z) {
-	z = (z == undefined) ? (0) : (z);
+SpiderGL.Math.Mat3.mul2 = function (m, v, z=0) {
 	return [
 		m[0]*v[0] + m[3]*v[1] + m[6]*z,
 		m[1]*v[0] + m[4]*v[1] + m[7]*z /* ,
@@ -3156,7 +3148,7 @@ SpiderGL.Math.Mat4 = { };
 /**
  * Duplicates the input 4x4 matrix.
  *
- * @param {array} n The input matrix.
+ * @param {array} m The input matrix.
  *
  * @returns {array} A new 16-component array r, where r[i] = m[i] (same as m.slice(0, 16)).
  */
@@ -3287,7 +3279,7 @@ SpiderGL.Math.Mat4.elem$ = function (m, row, col, value) {
  * @returns {array} A new 4-component array representing the row-th row of m.
  */
 SpiderGL.Math.Mat4.row = function (m, row) {
-	return [m[row+0], m[row+4], m[row+8], m[row+12]];
+	return [m[row], m[row+4], m[row+8], m[row+12]];
 }
 
 /**
@@ -3298,7 +3290,7 @@ SpiderGL.Math.Mat4.row = function (m, row) {
  * @param {array} v A 4-component array that will be copied to the row-th row of m.
  */
 SpiderGL.Math.Mat4.row$ = function (m, row, v) {
-	m[row+ 0] = v[0];
+	m[row] = v[0];
 	m[row+ 4] = v[1];
 	m[row+ 8] = v[2];
 	m[row+12] = v[3];
@@ -3313,8 +3305,8 @@ SpiderGL.Math.Mat4.row$ = function (m, row, v) {
  * @returns {array} A new 4-component array representing the col-th column of m.
  */
 SpiderGL.Math.Mat4.col = function (m, col) {
-	var i = col * 4;
-	return [m[i+0], m[i+1], m[i+2], m[i+3]];
+	const i = col * 4;
+	return [m[i], m[i+1], m[i+2], m[i+3]];
 }
 
 /**
@@ -3325,8 +3317,8 @@ SpiderGL.Math.Mat4.col = function (m, col) {
  * @param {array} v A 4-component array that will be copied to the col-th column of m.
  */
 SpiderGL.Math.Mat4.col$ = function (m, col, v) {
-	var i = col * 4;
-	m[i+0] = v[0];
+	const i = col * 4;
+	m[i] = v[0];
 	m[i+1] = v[1];
 	m[i+2] = v[2];
 	m[i+3] = v[3];
@@ -3337,7 +3329,7 @@ SpiderGL.Math.Mat4.col$ = function (m, col, v) {
  *
  * @param {array} m The input matrix.
  *
- * @return {bool} True if the input matrix is the identity matrix, false otherwise.
+ * @return {boolean} True if the input matrix is the identity matrix, false otherwise.
  */
 SpiderGL.Math.Mat4.isIdentity = function (m) {
 	return ((m[ 0] === 1) && (m[ 1] === 0) && (m[ 2] === 0) && (m[ 3] === 0) &&
@@ -3405,7 +3397,7 @@ SpiderGL.Math.Mat4.sub = function (a, b) {
  * @return {array} A new 4x4 matrix r, result of matrix multiplication r = a * b.
  */
 SpiderGL.Math.Mat4.mul = function (a, b) {
-	var a0  = a[ 0], a1  = a[ 1],  a2 = a[ 2], a3  = a[ 3],
+	const a0  = a[ 0], a1  = a[ 1],  a2 = a[ 2], a3  = a[ 3],
 	    a4  = a[ 4], a5  = a[ 5],  a6 = a[ 6], a7  = a[ 7],
 	    a8  = a[ 8], a9  = a[ 9], a10 = a[10], a11 = a[11],
 	    a12 = a[12], a13 = a[13], a14 = a[14], a15 = a[15],
@@ -3464,12 +3456,11 @@ SpiderGL.Math.Mat4.muls = function (m, s) {
  *
  * @return {array} A new 3-dimensional vector r, where r = m * v.
  */
-SpiderGL.Math.Mat4.mul3 = function (m, v, w) {
-	w = (w == undefined) ? (1) : (w);
+SpiderGL.Math.Mat4.mul3 = function (m, v, w=1) {
 	return [
 		m[ 0]*v[0] + m[ 4]*v[1] + m[ 8]*v[2] + m[12]*w,
 		m[ 1]*v[0] + m[ 5]*v[1] + m[ 9]*v[2] + m[13]*w,
-		m[ 2]*v[0] + m[ 6]*v[1] + m[10]*v[2] + m[14]*w /* ,
+		m[ 2]*v[0] + m[ 6]*v[1] + m[10]*v[2] + m[14]*w, /* ,
 		m[ 3]*v[0] + m[ 7]*v[1] + m[11]*v[2] + m[15]*w */
 	];
 }
@@ -3565,7 +3556,7 @@ SpiderGL.Math.Mat4.transpose = function (m) {
  * @returns {number} The determinant of m.
  */
 SpiderGL.Math.Mat4.determinant = function (m) {
-	var m0  = m[ 0], m1  = m[ 1], m2  = m[ 2], m3  = m[ 3],
+	const m0  = m[ 0], m1  = m[ 1], m2  = m[ 2], m3  = m[ 3],
 	    m4  = m[ 4], m5  = m[ 5], m6  = m[ 6], m7  = m[ 7],
 	    m8  = m[ 8], m9  = m[ 9], m10 = m[10], m11 = m[11],
 	    m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15];
@@ -3586,12 +3577,12 @@ SpiderGL.Math.Mat4.determinant = function (m) {
  * @returns {array} A new 4x4 matrix representing the inverse of m.
  */
 SpiderGL.Math.Mat4.inverse = function (m) {
-	var m0  = m[ 0], m1  = m[ 1], m2  = m[ 2], m3  = m[ 3],
+	const m0  = m[ 0], m1  = m[ 1], m2  = m[ 2], m3  = m[ 3],
 	    m4  = m[ 4], m5  = m[ 5], m6  = m[ 6], m7  = m[ 7],
 	    m8  = m[ 8], m9  = m[ 9], m10 = m[10], m11 = m[11],
 	    m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15];
 
-	var d = 1 / (
+	const d = 1 / (
 		m12 * m9 * m6 * m3 - m8 * m13 * m6 * m3 - m12 * m5 * m10 * m3 + m4 * m13 * m10 * m3 +
 		m8 * m5 * m14 * m3 - m4 * m9 * m14 * m3 - m12 * m9 * m2 * m7 + m8 * m13 * m2 * m7 +
 		m12 * m1 * m10 * m7 - m0 * m13 * m10 * m7 - m8 * m1 * m14 * m7 + m0 * m9 * m14 * m7 +
@@ -3630,11 +3621,11 @@ SpiderGL.Math.Mat4.inverse = function (m) {
  * @returns {array} A new 3x3 matrix representing the inverse transpose of the upper-left 3x3 matrix of m.
  */
 SpiderGL.Math.Mat4.inverseTranspose33 = function (m) {
-	var m11 = m[ 0], m21 = m[ 1], m31 = m[ 2],
+	const m11 = m[ 0], m21 = m[ 1], m31 = m[ 2],
 	    m12 = m[ 4], m22 = m[ 5], m32 = m[ 6],
 	    m13 = m[ 8], m23 = m[ 9], m33 = m[10];
 
-	var d =  1 / (m11*(m33*m22 - m32*m23) - m21*(m33*m12 - m32*m13) + m31*(m23*m12 - m22*m13));
+	const d =  1 / (m11*(m33*m22 - m32*m23) - m21*(m33*m12 - m32*m13) + m31*(m23*m12 - m22*m13));
 
 	return [
 		d * (m33*m22 - m32*m23), d * (m32*m13 - m33*m12), d * (m23*m12 - m22*m13),
@@ -3682,16 +3673,16 @@ SpiderGL.Math.Mat4.translation = function (v) {
  * @returns {array} A new column-major 4x4 rotation matrix.
  */
 SpiderGL.Math.Mat4.rotationAngleAxis = function (angle, axis) {
-	var ax = SpiderGL.Math.Vec3.normalize(axis);
-	var s  = SpiderGL.Math.sin(angle);
-	var c  = SpiderGL.Math.cos(angle);
-	var q   = 1 - c;
+	const ax = SpiderGL.Math.Vec3.normalize(axis);
+	const s  = SpiderGL.Math.sin(angle);
+	const c  = SpiderGL.Math.cos(angle);
+	const q   = 1 - c;
 
-	var x = ax[0];
-	var y = ax[1];
-	var z = ax[2];
+	const x = ax[0];
+	const y = ax[1];
+	const z = ax[2];
 
-	var xx, yy, zz, xy, yz, zx, xs, ys, zs;
+	let xx, yy, zz, xy, yz, zx, xs, ys, zs;
 
 	xx = x * x;
 	yy = y * y;
@@ -3732,18 +3723,18 @@ SpiderGL.Math.Mat4.scaling = function (v) {
  *
  * @param {array} position The viewer's position as a 3-dimensional vector.
  * @param {array} target The viewer's look-at point as a 3-dimensional vector.
- * @param {array} position The viewer's up vector as a 3-dimensional vector.
+ * @param {array} up The viewer's up vector as a 3-dimensional vector.
  *
  * @returns {array} A new column-major 4x4 look-at matrix.
  */
 SpiderGL.Math.Mat4.lookAt = function (position, target, up) {
-	var v = SpiderGL.Math.Vec3.normalize(SpiderGL.Math.Vec3.sub(target, position));
-	var u = SpiderGL.Math.Vec3.normalize(up);
-	var s = SpiderGL.Math.Vec3.normalize(SpiderGL.Math.Vec3.cross(v, u));
+	const v = SpiderGL.Math.Vec3.normalize(SpiderGL.Math.Vec3.sub(target, position));
+	let u = SpiderGL.Math.Vec3.normalize(up);
+	const s = SpiderGL.Math.Vec3.normalize(SpiderGL.Math.Vec3.cross(v, u));
 
 	u = SpiderGL.Math.Vec3.cross(s, v);
 
-	var m = [
+	const m = [
 		 s[0], u[0], -v[0], 0,
 		 s[1], u[1], -v[1], 0,
 		 s[2], u[2], -v[2], 0,
@@ -3762,8 +3753,8 @@ SpiderGL.Math.Mat4.lookAt = function (position, target, up) {
  * @returns {array} A new column-major 4x4 orthographic projection matrix.
  */
 SpiderGL.Math.Mat4.ortho = function (min, max) {
-	var sum = SpiderGL.Math.Vec3.add(max, min);
-	var dif = SpiderGL.Math.Vec3.sub(max, min);
+	const sum = SpiderGL.Math.Vec3.add(max, min);
+	const dif = SpiderGL.Math.Vec3.sub(max, min);
 
 	return [
 		     2 / dif[0],                 0,           0,      0,
@@ -3782,9 +3773,9 @@ SpiderGL.Math.Mat4.ortho = function (min, max) {
  * @returns {array} A new column-major 4x4 frustum matrix.
  */
 SpiderGL.Math.Mat4.frustum = function (min, max) {
-	var sum = SpiderGL.Math.Vec3.add(max, min);
-	var dif = SpiderGL.Math.Vec3.sub(max, min);
-	var t   = 2.0 * min[2];
+	const sum = SpiderGL.Math.Vec3.add(max, min);
+	const dif = SpiderGL.Math.Vec3.sub(max, min);
+	const t   = 2.0 * min[2];
 
 	return [
 		     t / dif[0],               0,                     0,  0,
@@ -3805,8 +3796,8 @@ SpiderGL.Math.Mat4.frustum = function (min, max) {
  * @returns {array} A new column-major 4x4 perspective projection matrix.
  */
 SpiderGL.Math.Mat4.perspective = function (fovY, aspectRatio, zNear, zFar) {
-	var a = zNear * SpiderGL.Math.tan(fovY / 2);
-	var b = a * aspectRatio;
+	const a = zNear * SpiderGL.Math.tan(fovY / 2);
+	const b = a * aspectRatio;
 
 	return SpiderGL.Math.Mat4.frustum([-b, -a, zNear], [b, a, zFar]);
 }
@@ -3820,7 +3811,7 @@ SpiderGL.Math.Mat4.perspective = function (fovY, aspectRatio, zNear, zFar) {
  * @returns {array} The input matrix dst, where dst[i] = src[i].
  */
 SpiderGL.Math.Mat4.copy$ = function (dst, src) {
-	for (var i=0; i<16; ++i) {
+	for (let i=0; i<16; ++i) {
 		dst[i] = src[i];
 	}
 	return dst;
@@ -3849,7 +3840,7 @@ SpiderGL.Math.Mat4.identity$ = function (m) {
  * @returns {array} The input matrix m, where m[i] = -m[i].
  */
 SpiderGL.Math.Mat4.neg$ = function (m) {
-	for (var i=0; i<16; ++i) {
+	for (let i=0; i<16; ++i) {
 		m[i] = -m[i];
 	}
 	return m;
@@ -3864,7 +3855,7 @@ SpiderGL.Math.Mat4.neg$ = function (m) {
  * @returns {array} The input matrix a, where a[i] = a[i] + b[i].
  */
 SpiderGL.Math.Mat4.add$ = function (a, b) {
-	for (var i=0; i<16; ++i) {
+	for (let i=0; i<16; ++i) {
 		a[i] += b[i];
 	}
 	return a;
@@ -3879,7 +3870,7 @@ SpiderGL.Math.Mat4.add$ = function (a, b) {
  * @returns {array} The input matrix a, where a[i] = a[i] - b[i].
  */
 SpiderGL.Math.Mat4.sub$ = function (a, b) {
-	for (var i=0; i<16; ++i) {
+	for (let i=0; i<16; ++i) {
 		a[i] -= b[i];
 	}
 	return a;
@@ -3894,7 +3885,7 @@ SpiderGL.Math.Mat4.sub$ = function (a, b) {
  * @returns {array} The input matrix a, where a = a * b.
  */
 SpiderGL.Math.Mat4.mul$ = function (a, b) {
-	var a0  = a[ 0], a1  = a[ 1],  a2 = a[ 2], a3  = a[ 3],
+	const a0  = a[ 0], a1  = a[ 1],  a2 = a[ 2], a3  = a[ 3],
 	    a4  = a[ 4], a5  = a[ 5],  a6 = a[ 6], a7  = a[ 7],
 	    a8  = a[ 8], a9  = a[ 9], a10 = a[10], a11 = a[11],
 	    a12 = a[12], a13 = a[13], a14 = a[14], a15 = a[15],
@@ -3936,7 +3927,7 @@ SpiderGL.Math.Mat4.mul$ = function (a, b) {
  * @returns {array} The input matrix m, where m[i] = m[i] * s.
  */
 SpiderGL.Math.Mat4.muls$ = function (m, s) {
-	for (var i=0; i<16; ++i) {
+	for (let i=0; i<16; ++i) {
 		m[i] *= s;
 	}
 	return m;
@@ -3951,7 +3942,7 @@ SpiderGL.Math.Mat4.muls$ = function (m, s) {
  * @returns {array} The input matrix a, where a[i] = a[i] * b[i].
  */
 SpiderGL.Math.Mat4.compMul$ = function (a, b) {
-	for (var i=0; i<16; ++i) {
+	for (let i=0; i<16; ++i) {
 		a[i] *= b[i];
 	}
 	return a;
@@ -3966,7 +3957,7 @@ SpiderGL.Math.Mat4.compMul$ = function (a, b) {
  * @returns {array} The input matrix a, where a[i] = a[i] / b[i].
  */
 SpiderGL.Math.Mat4.compDiv$ = function (a, b) {
-	for (var i=0; i<16; ++i) {
+	for (let i=0; i<16; ++i) {
 		a[i] /= b[i];
 	}
 	return a;
@@ -3980,7 +3971,7 @@ SpiderGL.Math.Mat4.compDiv$ = function (a, b) {
  * @returns {array} The transposed input matrix m.
  */
 SpiderGL.Math.Mat4.transpose$ = function (m) {
-	var t;
+	let t;
 	t = m[ 1]; m[ 1] = m[ 4]; m[ 4] = t;
 	t = m[ 2]; m[ 2] = m[ 8]; m[ 8] = t;
 	t = m[ 3]; m[ 3] = m[12]; m[12] = t;
@@ -3998,12 +3989,12 @@ SpiderGL.Math.Mat4.transpose$ = function (m) {
  * @returns {array} The inverted input matrix m.
  */
 SpiderGL.Math.Mat4.invert$ = function (m) {
-	var m0  = m[ 0], m1  = m[ 1], m2  = m[ 2], m3  = m[ 3],
+	const m0  = m[ 0], m1  = m[ 1], m2  = m[ 2], m3  = m[ 3],
 	    m4  = m[ 4], m5  = m[ 5], m6  = m[ 6], m7  = m[ 7],
 	    m8  = m[ 8], m9  = m[ 9], m10 = m[10], m11 = m[11],
 	    m12 = m[12], m13 = m[13], m14 = m[14], m15 = m[15];
 
-	var d = 1.0 / (
+	const d = 1.0 / (
 		m12 * m9 * m6 * m3 - m8 * m13 * m6 * m3 - m12 * m5 * m10 * m3 + m4 * m13 * m10 * m3 +
 		m8 * m5 * m14 * m3 - m4 * m9 * m14 * m3 - m12 * m9 * m2 * m7 + m8 * m13 * m2 * m7 +
 		m12 * m1 * m10 * m7 - m0 * m13 * m10 * m7 - m8 * m1 * m14 * m7 + m0 * m9 * m14 * m7 +
@@ -4043,7 +4034,7 @@ SpiderGL.Math.Mat4.invert$ = function (m) {
  * @returns {array} The translated input matrix m with the same result as m = m * t, where t is a translation matrix.
  */
 SpiderGL.Math.Mat4.translate$ = function (m, v) {
-	var x = v[0],
+	const x = v[0],
 	    y = v[1],
 	    z = v[2];
 
@@ -4067,8 +4058,7 @@ SpiderGL.Math.Mat4.translate$ = function (m, v) {
  * @returns {array} The rotated input matrix m with the same result as m = m * r, where r is a rotation matrix.
  */
 SpiderGL.Math.Mat4.rotateAngleAxis$ = function (m, angle, axis) {
-	var r = SpiderGL.Math.Mat4.rotationAngleAxis(angle, axis);
-	return SpiderGL.Math.Mat4.mul$(m, r);
+	return SpiderGL.Math.Mat4.mul$(m, SpiderGL.Math.Mat4.rotationAngleAxis(angle, axis));
 }
 
 /**
@@ -4080,7 +4070,7 @@ SpiderGL.Math.Mat4.rotateAngleAxis$ = function (m, angle, axis) {
  * @returns {array} The scaled input matrix m with the same result as m = m * s, where s is a scaling matrix.
  */
 SpiderGL.Math.Mat4.scale$ = function (m, v) {
-	var x = v[0],
+	const x = v[0],
 	    y = v[1],
 	    z = v[2];
 
@@ -4143,17 +4133,17 @@ SpiderGL.Math.Quat.inverse = function (q) {
  * Multiplies two quaternions.
  *
  * @param {array} p The first quaternion multiplication operand.
- * @param {array} q The second quaternion multiplication quaternion.
+ * @param {array} q The second quaternion multiplication operand.
  *
- * @returns {array} A new 4-component array r, where r = [-q[0], -q[1], -q[2], q[3]].
+ * @returns {array} A new 4-component array
  */
 SpiderGL.Math.Quat.mul = function (p, q) {
-	var px = p[0],
+	const px = p[0],
 	    py = p[1],
 	    pz = p[2],
 	    pw = p[3];
 
-	var qx = q[0],
+	const qx = q[0],
 	    qy = q[1],
 	    qz = q[2],
 	    qw = q[3];
@@ -4179,25 +4169,24 @@ SpiderGL.Math.Quat.muls = function (q, s) {
 }
 
 SpiderGL.Math.Quat.normalize = function (q) {
-	var s = 1 / SpiderGL.Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
-	return SpiderGL.Math.Quat.muls(q, s);
+	return SpiderGL.Math.Quat.muls(q, 1 / SpiderGL.Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]));
 }
 
 SpiderGL.Math.Quat.from33 = function (m) {
-	var m00 = m[0],
+	const m00 = m[0],
 	    m10 = m[1],
 	    m20 = m[2];
 
-	var m01 = m[3],
+	const m01 = m[3],
 	    m11 = m[4],
 	    m21 = m[5];
 
-	var m02 = m[6],
+	const m02 = m[6],
 	    m12 = m[7],
 	    m22 = m[8];
 
-	var t = m00 + m11 + m22;
-	var s;
+	let t = m00 + m11 + m22;
+	let s;
 
 	if (t > 0) {
 		t = t + 1;
@@ -4238,26 +4227,24 @@ SpiderGL.Math.Quat.from33 = function (m) {
 			(m10 - m01) * s
 		];
 	}
-
-	return null;
 }
 
 SpiderGL.Math.Quat.to33 = function (q) {
-	var x  = q[0],
+	const x  = q[0],
 	    y  = q[1],
 	    z  = q[2],
 	    w  = q[3];
 
-	var xx = x*x,
+	const xx = x*x,
 	    xy = x*y,
 	    xz = x*z,
 	    xw = x*w;
 
-	var yy = y*y,
+	const yy = y*y,
 	    yz = y*z,
 	    yw = y*w;
 
-	var zz = z*z,
+	const zz = z*z,
 	    zw = z*w;
 
 	return [
@@ -4359,8 +4346,7 @@ SpiderGL.Math.Quat.muls$ = function (q, s) {
 }
 
 SpiderGL.Math.Quat.normalize$ = function (q) {
-	var s = 1 / SpiderGL.Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
-	return SpiderGL.Math.Quat.muls$(q, s);
+	return SpiderGL.Math.Quat.muls$(q, 1 / SpiderGL.Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]));
 }
 
 /*---------------------------------------------------------*/
@@ -4371,11 +4357,11 @@ SpiderGL.Math.Quat.normalize$ = function (q) {
 /*---------------------------------------------------------*/
 
 SpiderGL.Math.project = function (xyzw, modelViewProjectionMatrix, viewport, depthRange) {
-	var v3 = SpiderGL.Math.Vec3;
-	var m4 = SpiderGL.Math.Mat4;
+	const v3 = SpiderGL.Math.Vec3;
+	const m4 = SpiderGL.Math.Mat4;
 
-	var r    = m4.mul4(modelViewProjectionMatrix, xyzw);
-	var invW = 1 / r[3];
+	const r    = m4.mul4(modelViewProjectionMatrix, xyzw);
+	const invW = 1 / r[3];
 	r[3]     = invW;
 
 	v3.muls$(r, invW / 2);
@@ -4388,10 +4374,10 @@ SpiderGL.Math.project = function (xyzw, modelViewProjectionMatrix, viewport, dep
 };
 
 SpiderGL.Math.unproject = function (xyz, modelViewProjectionMatrixInverse, viewport, depthRange) {
-	var v3 = SpiderGL.Math.Vec3;
-	var m4 = SpiderGL.Math.Mat4;
+	const v3 = SpiderGL.Math.Vec3;
+	const m4 = SpiderGL.Math.Mat4;
 
-	var r = v3.to4(xyz, 1.0);
+	let r = v3.to4(xyz, 1.0);
 
 	v3.sub$(r, [viewport[0], viewport[1], depthRange[0]]);
 	v3.div$(r, [viewport[2], viewport[3], depthRange[1] - depthRange[0]]);
@@ -4400,7 +4386,7 @@ SpiderGL.Math.unproject = function (xyz, modelViewProjectionMatrixInverse, viewp
 	v3.subs$(r, 1);
 
 	r        = m4.mul4(modelViewProjectionMatrixInverse, r);
-	var invW = 1 / r[3];
+	const invW = 1 / r[3];
 	r[3]     = invW;
 
 	v3.muls$(r, invW);
