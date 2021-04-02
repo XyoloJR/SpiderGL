@@ -4283,21 +4283,22 @@ SpiderGL.Math.Quat.to44 = function (q) {
 	return SpiderGL.Math.Mat3.to44(SpiderGL.Math.Quat.to33(q));
 }
 
-SpiderGL.Math.Quat.fromAngleAxis = function (angle, axis) {
-	return [0, 0, 0, 1];
-}
-
-SpiderGL.Math.Quat.toAngleAxis = function (q) {
-	return [0, 0, 0, 1];
-}
-
-SpiderGL.Math.Quat.fromEulerAngles = function (x, y, z) {
-	return [0, 0, 0, 1];
-}
-
-SpiderGL.Math.Quat.toEulerAngles = function (q) {
-	return [0, 0, 0, 1];
-}
+// Not implemented
+// SpiderGL.Math.Quat.fromAngleAxis = function (angle, axis) {
+// 	return [0, 0, 0, 1];
+// }
+//
+// SpiderGL.Math.Quat.toAngleAxis = function (q) {
+// 	return [0, 0, 0, 1];
+// }
+//
+// SpiderGL.Math.Quat.fromEulerAngles = function (x, y, z) {
+// 	return [0, 0, 0, 1];
+// }
+//
+// SpiderGL.Math.Quat.toEulerAngles = function (q) {
+// 	return [0, 0, 0, 1];
+// }
 
 SpiderGL.Math.Quat.copy$ = function (p, q) {
 	p[0] = q[0];
@@ -4322,13 +4323,21 @@ SpiderGL.Math.Quat.invert$ = function (q) {
 	return q;
 }
 
-SpiderGL.Math.Quat.mul$ = function (q) {
-	var px = p[0],
+/**
+ * Multiplies two quaternions.
+ *
+ * @param {array} p The first quaternion multiplication operand.
+ * @param {array} q The second quaternion multiplication operand.
+ *
+ * @returns {array} Result is written into q
+ */
+SpiderGL.Math.Quat.mul$ = function (p, q) {
+	const px = p[0],
 	    py = p[1],
 	    pz = p[2],
 	    pw = p[3];
 
-	var qx = q[0],
+	const qx = q[0],
 	    qy = q[1],
 	    qz = q[2],
 	    qw = q[3];
