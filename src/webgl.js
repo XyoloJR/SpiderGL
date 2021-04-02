@@ -129,7 +129,7 @@ SpiderGL.WebGL.Context._prepareContex = function (gl) {
 	const glFunctions = { };
 	sgl.glFunctions = glFunctions;
 	for (const f in gl) {
-		const fn = gl[fn];
+		const fn = gl[f];
 		if (typeof fn == "function") {
 			glFunctions[f] = fn;
 		}
@@ -1162,19 +1162,19 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 
 	const dsa = pubExt;
 	const ext = dsa._ext;
-	const glFunctions = ext.glFunctions;
+	// const glFunctions = ext.glFunctions;
 
 	ext.cb = gl.getExtension("SGL_current_binding");
 	if (!ext.cb) return false;
 
 	// buffer
 	//////////////////////////////////////////////////////////////////////////////////////////
-	dsa.getBufferParameter = function (buffer, target, pname) {
+	dsa.getBufferParameter = function (buffer, target, pName) {
 		const ext = this._ext;
 		const gl  = ext.gl;
 		const current = ext.cb.getCurrentBuffer(target);
 		(current != buffer) && gl.bindBuffer(target, buffer);
-		const r = gl.getBufferParameter(target, pname);
+		const r = gl.getBufferParameter(target, pName);
 		(current != buffer) && gl.bindBuffer(target, current);
 		return r;
 	};
@@ -1232,12 +1232,12 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 		return r;
 	};
 
-	dsa.getFramebufferAttachmentParameter = function (framebuffer, target, attachment, pname) {
+	dsa.getFramebufferAttachmentParameter = function (framebuffer, target, attachment, pName) {
 		const ext = this._ext;
 		const gl  = ext.gl;
 		const current = ext.cb.getCurrentFramebuffer(target);
 		(current != framebuffer) && gl.bindFramebuffer(target, framebuffer);
-		const r = gl.getFramebufferAttachmentParameter(target, attachment, pname);
+		const r = gl.getFramebufferAttachmentParameter(target, attachment, pName);
 		(current != framebuffer) && gl.bindFramebuffer(target, current);
 		return r;
 	};
@@ -1461,12 +1461,12 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 
 	// renderbuffer
 	//////////////////////////////////////////////////////////////////////////////////////////
-	dsa.getRenderbufferParameter = function (renderbuffer, target, pname) {
+	dsa.getRenderbufferParameter = function (renderbuffer, target, pName) {
 		const ext = this._ext;
 		const gl  = ext.gl;
 		const current = ext.cb.getCurrentRenderbuffer(target);
 		(current != renderbuffer) && gl.bindRenderbuffer(target, renderbuffer);
-		const r = gl.getRenderbufferParameter.call(gl, target, pname);
+		const r = gl.getRenderbufferParameter.call(gl, target, pName);
 		(current != renderbuffer) && gl.bindRenderbuffer(target, current);
 		return r;
 	};
@@ -1505,12 +1505,12 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 	ext.textureTargetMap[gl.TEXTURE_CUBE_MAP_POSITIVE_Z] = gl.TEXTURE_CUBE_MAP;
 	ext.textureTargetMap[gl.TEXTURE_CUBE_MAP_NEGATIVE_Z] = gl.TEXTURE_CUBE_MAP;
 
-	dsa.getTexParameter = function (texture, target, pname) {
+	dsa.getTexParameter = function (texture, target, pName) {
 		const ext = this._ext;
 		const gl  = ext.gl;
 		const current = ext.cb.getCurrentTexture(target);
 		(current != texture) && gl.bindTexture(target, texture);
-		const r = gl.getTexParameter(target, pname);
+		const r = gl.getTexParameter(target, pName);
 		(current != texture) && gl.bindTexture(target, current);
 		return r;
 	};
@@ -1555,21 +1555,21 @@ SpiderGL.WebGL.Context._setup_SGL_direct_state_access = function (gl, pubExt) {
 		(current != texture) && gl.bindTexture(texTarget, current);
 	};
 
-	dsa.texParameterf = function (texture, target, pname, param) {
+	dsa.texParameterf = function (texture, target, pName, param) {
 		const ext = this._ext;
 		const gl  = ext.gl;
 		const current = ext.cb.getCurrentTexture(target);
 		(current != texture) && gl.bindTexture(target, texture);
-		gl.texParameterf(target, pname, param);
+		gl.texParameterf(target, pName, param);
 		(current != texture) && gl.bindTexture(target, current);
 	};
 
-	dsa.texParameteri = function (texture, target, pname, param) {
+	dsa.texParameteri = function (texture, target, pName, param) {
 		const ext = this._ext;
 		const gl  = ext.gl;
 		const current = ext.cb.getCurrentTexture(target);
 		(current != texture) && gl.bindTexture(target, texture);
-		gl.texParameteri(target, pname, param);
+		gl.texParameteri(target, pName, param);
 		(current != texture) && gl.bindTexture(target, current);
 	};
 
@@ -1740,8 +1740,8 @@ SpiderGL.WebGL.ObjectGL = function (gl, target, options) {
 
 	SpiderGL.Core.ObjectBase.call(this);
 
-	// TODO check getExtension doesn't modify gl
-	// const wn = gl.getExtension("SGL_wrapper_notify");
+	// TODO check if getExtension modify gl
+	gl.getExtension("SGL_wrapper_notify");
 
 	this._gl  = gl;
 	this._cb  = gl.getExtension("SGL_current_binding");
@@ -1771,7 +1771,7 @@ SpiderGL.WebGL.ObjectGL.unbind = function (gl) { };
 
 SpiderGL.WebGL.ObjectGL.prototype = {
 	/**
-	 * The WebGLRenderingContext used at costruction.
+	 * The WebGLRenderingContext used at construction.
 	 *
 	 * @type WebGLRenderingContext
 	 *
@@ -1788,7 +1788,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 	 *
 	 * The native handle can be used with WebGLRenderingContext methods.
 	 *
-	 * @type {WebObjectGL}
+	 * @type {ObjectGL}
 	 *
 	 * @readonly
 	 *
@@ -1842,7 +1842,7 @@ SpiderGL.WebGL.ObjectGL.prototype = {
 	 *
 	 * @readonly
 	 */
-	get isReady () {
+  get isReady () {
 		return false;
 	},
 
@@ -2029,7 +2029,7 @@ SpiderGL.WebGL.Buffer.prototype = {
 
 	/* *
 	 * Tests for empty buffer.
-	 * It is true if the buffer size is greather than zero, false otherwise.
+	 * It is true if the buffer size is greater than zero, false otherwise.
 	 *
 	 * @type boolean
 	 *
@@ -2139,7 +2139,7 @@ SpiderGL.WebGL.Buffer.prototype = {
 
 	/**
 	 * Binds "null" to the appropriate target.
-	 * This method is provided only for simmetry with {@link bind} and is not relative to the object state.
+	 * This method is provided only for symmetry with {@link bind} and is not relative to the object state.
 	 *
 	 * @see bind
 	 */
@@ -2261,7 +2261,7 @@ SpiderGL.WebGL.VertexBuffer.prototype = {
 	 * @param {object} [options] Vertex attribute pointer parameters.
 	 * @param {number} [options.index=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_INDEX] Attribute index.
 	 * @param {number} [options.size=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_SIZE] Attribute size.
-	 * @param {number} [options.type=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_TYPE] Attribute base type.
+	 * @param {number} [options.glType=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_TYPE] Attribute base type.
 	 * @param {number} [options.normalized=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_NORMALIZED] True if the attribute has an integer type and must be normalized.
 	 * @param {number} [options.stride=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_STRIDE] Bytes from the beginning of an element and the beginning of the next one.
 	 * @param {number} [options.offset=SpiderGL.WebGL.VertexBuffer.DEFAULT_ATTRIBUTE_OFFSET] Offset (in bytes) from the start of the buffer.
@@ -2491,6 +2491,7 @@ SpiderGL.WebGL.Framebuffer = function (glContext, options) {
 		let level    = 0;
 		let target   = 0;
 
+		// TODO check t definition
 		for (const attachment in SpiderGL.WebGL.Framebuffer._attachmentName) {
 			resource = gl.getFramebufferAttachmentParameter(t, attachment, gl.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
 			type     = gl.getFramebufferAttachmentParameter(t, attachment, gl.FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
@@ -2648,7 +2649,7 @@ SpiderGL.WebGL.Framebuffer._attachmentName[WebGLRenderingContext.STENCIL_ATTACHM
 SpiderGL.WebGL.Framebuffer._attachmentName[WebGLRenderingContext.DEPTH_STENCIL_ATTACHMENT] = "depthStencil";
 
 SpiderGL.WebGL.Framebuffer.prototype = {
-	_gl_deleteFramebuffer : function (framebuffer) {
+	_gl_deleteFramebuffer : function () {
 		this._h = null;
 	},
 
@@ -2661,7 +2662,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 	_gl_checkFramebufferStatus : function (target) {
 	},
 
-	_gl_getFramebufferAttachmentParameter : function (target, attachment, pname) {
+	_gl_getFramebufferAttachmentParameter : function (target, attachment, pName) {
 	},
 
 	_gl_framebufferRenderbuffer : function (target, attachment, renderbuffertarget, renderbuffer) {
@@ -2743,6 +2744,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 		if (!name) return false;
 
 		const gl = this._gl;
+    const t = this._t;
 
 		const isNullResource = (!nfo || (("resource" in nfo) && !nfo.resource));
 		if  (isNullResource) {
@@ -2785,7 +2787,6 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 			face     : SpiderGL.WebGL.Framebuffer.DEFAULT_ATTACHMENT_CUBE_MAP_FACE
 		}, nfo);
 
-		const t = this._t;
 
 		switch (resourceType) {
 			case gl.TEXTURE:
@@ -3199,7 +3200,7 @@ SpiderGL.WebGL.Framebuffer.prototype = {
 
 	/**
 	 * Binds "null" to the WebGLRenderingContex.FRAMEBUFFER target.
-	 * This method is provided only for simmetry with {@link bind} and is not relative to the object state.
+	 * This method is provided only for symmetry with {@link bind} and is not relative to the object state.
 	 *
 	 * @see bind
 	 */
@@ -3219,7 +3220,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Framebuffer, SpiderGL.WebGL.ObjectGL);
  *
  * @augments SpiderGL.WebGL.ObjectGL
  *
- * @param {WebGLRenderingContext} gl A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
+ * @param {WebGLRenderingContext} glContext A WebGLRenderingContext hijacked with {@link SpiderGL.WebGL.Context.hijack}.
  * @param {object} [options] Optional parameters.
  * @param {WebGLProgram} [options.handle] A WebGLProgram. If present, this object will be used as the wrapped WebGLProgram and the attached shaders will be queried. Otherwise a new one will be created.
  * @param {boolean} [options.autoLink=SpiderGL.WebGL.Program.DEFAULT_AUTO_LINK] If true, the program will be linked automatically whenever shaders are added or removed, or vertex attribute indices change.
@@ -3276,8 +3277,6 @@ SpiderGL.WebGL.Program = function (glContext, options) {
 	if (!!this._h && !!this._h._spidergl && (this._h._spidergl != this)) return this._h._spidergl;
 
 	const gl  = this._gl;
-	const cb  = this._cb;
-	const dsa = this._dsa;
 
 	let h = this._h;
 
@@ -3350,7 +3349,7 @@ SpiderGL.WebGL.Program.DEFAULT_AUTO_LINK = true;
 SpiderGL.WebGL.Program.unbind = function (gl) { gl.useProgram(null); };
 
 SpiderGL.WebGL.Program._uniformSetFunctions = { };
-SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.boolean        ] = function (dsa, h, v) { dsa.uniform1i        (h, this.location,        v); };
+SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL       ] = function (dsa, h, v) { dsa.uniform1i        (h, this.location,        v); };
 SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL_VEC2   ] = function (dsa, h, v) { dsa.uniform2iv       (h, this.location,        v); };
 SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL_VEC3   ] = function (dsa, h, v) { dsa.uniform3iv       (h, this.location,        v); };
 SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.BOOL_VEC4   ] = function (dsa, h, v) { dsa.uniform4iv       (h, this.location,        v); };
@@ -3369,7 +3368,7 @@ SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.SAMPLER_2D  ] 
 SpiderGL.WebGL.Program._uniformSetFunctions[WebGLRenderingContext.SAMPLER_CUBE] = function (dsa, h, v) { dsa.uniform1i        (h, this.location,        v); };
 
 SpiderGL.WebGL.Program.prototype = {
-	_gl_deleteProgram : function (program) {
+	_gl_deleteProgram : function () {
 		this._h = null;
 	},
 
@@ -3391,7 +3390,7 @@ SpiderGL.WebGL.Program.prototype = {
 	_gl_getAttribLocation : function (program, name) {
 	},
 
-	_gl_getProgramParameter : function (program, pname) {
+	_gl_getProgramParameter : function (program, pName) {
 	},
 
 	_gl_getProgramInfoLog : function (program) {
@@ -3417,7 +3416,7 @@ SpiderGL.WebGL.Program.prototype = {
 		this._shaders.splice(idx, 1);
 	},
 
-	_gl_linkProgram : function (program) {
+	_gl_linkProgram : function () {
 		this._postLink();
 	},
 
@@ -3513,7 +3512,7 @@ SpiderGL.WebGL.Program.prototype = {
 			switch (type) {
 				case gl.VERTEX_SHADER   : shd = new SpiderGL.WebGL.VertexShader   (gl, { handle : shader }); break;
 				case gl.FRAGMENT_SHADER : shd = new SpiderGL.WebGL.FragmentShader (gl, { handle : shader }); break;
-				default : return; break;
+				default : return;
 			}
 		}
 		this._shaders.push(shd);
@@ -3523,7 +3522,7 @@ SpiderGL.WebGL.Program.prototype = {
 		const gl = this._gl;
 		const h = this._h;
 
-		let n    = 0;
+		let n
 		let nfo  = null;
 		let name = null;
 		let loc  = null;
@@ -3656,7 +3655,7 @@ SpiderGL.WebGL.Program.prototype = {
 
 	/**
 	 * Tests if the program is ready to use.
-	 * A program is considered ready if it is succesfully linked.
+	 * A program is considered ready if it is successfully linked.
 	 *
 	 * @type boolean
 	 *
@@ -3726,7 +3725,7 @@ SpiderGL.WebGL.Program.prototype = {
 	 */
 	addShaders : function (shaders, link) {
 		let mustLink = this._addShaders(shaders);
-		if (!mustLink) { return true; };
+		if (!mustLink) { return true; }
 		mustLink = SpiderGL.Utility.getDefaultValue(link, this._autoLink);
 		if (!mustLink) { return true; }
 		return this.link()
@@ -3743,7 +3742,7 @@ SpiderGL.WebGL.Program.prototype = {
 	 */
 	removeShaders : function (shaders, link) {
 		let mustLink = this._removeShaders(shaders);
-		if (!mustLink) { return true; };
+		if (!mustLink) { return true; }
 		mustLink = SpiderGL.Utility.getDefaultValue(link, this._autoLink);
 		if (!mustLink) { return true; }
 		return this.link()
@@ -3772,7 +3771,7 @@ SpiderGL.WebGL.Program.prototype = {
 	/**
 	 * Links the program.
 	 *
-	 * @returns {boolean} True if the program has been succesfully linked, false otherwise.
+	 * @returns {boolean} True if the program has been successfully linked, false otherwise.
 	 */
 	link : function () {
 		this._gl.linkProgram(this._h);
@@ -3783,14 +3782,13 @@ SpiderGL.WebGL.Program.prototype = {
 	 * Validates the program with the current attribute indices, uniforms and WebGLRenderingContext state
 	 * It is performed using WebGLRenderingContext.validateProgram().
 	 *
-	 * @returns {boolean} True if the program has been succesfully validated, false otherwise.
+	 * @returns {boolean} True if the program has been successfully validated, false otherwise.
 	 */
 	validate : function () {
 		const gl = this._gl;
 		const h = this._h;
 		gl.validateProgram(h);
-		const validated = !!gl.getProgramParameter(h, gl.VALIDATE_STATUS);
-		return validated;
+		return !!gl.getProgramParameter(h, gl.VALIDATE_STATUS);
 	},
 
 	/**
@@ -3918,7 +3916,7 @@ SpiderGL.WebGL.Program.prototype = {
 	 * 	uOther    : 1.0 // this uniform is not set because it is not an active uniform
 	 * });
 	 *
-	 * @returns {boolean} True if the uniforms have been set succesfully, false otherwise.
+	 * @returns {boolean} True if the uniforms have been set successfully, false otherwise.
 	 */
 	setUniforms : function (uniforms) {
 		if (!uniforms) { return false; }
@@ -4022,7 +4020,7 @@ SpiderGL.WebGL.Program.prototype = {
 
 	/**
 	 * Binds the "null" program with WebGLRenderingContext.useProgram(null).
-	 * This method is provided only for simmetry with {@link bind} and is not relative to the object state.
+	 * This method is provided only for symmetry with {@link bind} and is not relative to the object state.
 	 *
 	 * @see bind
 	 */
@@ -4063,7 +4061,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.Program, SpiderGL.WebGL.ObjectGL);
 SpiderGL.WebGL.Renderbuffer = function (glContext, options) {
 	if (!SpiderGL.WebGL.Context.isHijacked(glContext)) { return null; }
 
-	if (SpiderGL.Type.instanceOf(h, WebGLRenderbuffer)) {
+	if (SpiderGL.Type.instanceOf(this._h, WebGLRenderbuffer)) {
 		options = { handle : options };
 	}
 
@@ -4076,7 +4074,6 @@ SpiderGL.WebGL.Renderbuffer = function (glContext, options) {
 
 	const gl  = this._gl;
 	const cb  = this._cb;
-	const dsa = this._dsa;
 
 	const t = this._t;
 	let h = this._h;
@@ -4127,7 +4124,7 @@ SpiderGL.WebGL.Renderbuffer.TARGET = WebGLRenderingContext.RENDERBUFFER;
 SpiderGL.WebGL.Renderbuffer.unbind = function (gl) { gl.bindRenderbuffer(SpiderGL.WebGL.Renderbuffer.TARGET, null); };
 
 SpiderGL.WebGL.Renderbuffer.prototype = {
-	_gl_deleteRenderbuffer : function (renderbuffer) {
+	_gl_deleteRenderbuffer : function () {
 		this._h = null;
 	},
 
@@ -4137,11 +4134,11 @@ SpiderGL.WebGL.Renderbuffer.prototype = {
 	_gl_bindRenderbuffer : function (target, renderbuffer) {
 	},
 
-	_gl_getRenderbufferParameter : function (target, pname) {
+	_gl_getRenderbufferParameter : function (target, pName) {
 	},
 
-	_gl_renderbufferStorage : function (target, internalformat, width, height) {
-		this._format = internalformat;
+	_gl_renderbufferStorage : function (target, internalFormat, width, height) {
+		this._format = internalFormat;
 		this._width  = width;
 		this._height = height;
 	},
@@ -4227,7 +4224,7 @@ SpiderGL.WebGL.Renderbuffer.prototype = {
 
 	/**
 	 * Binds "null" to the WebGLRenderingContex.RENDERBUFFER target.
-	 * This method is provided only for simmetry with {@link bind} and is not relative to the object state.
+	 * This method is provided only for symmetry with {@link bind} and is not relative to the object state.
 	 *
 	 * @see bind
 	 */
@@ -4286,7 +4283,6 @@ SpiderGL.WebGL.Shader = function (glContext, target, type, options) {
 
 	let source   = "";
 	let compiled = false;
-	let deleted  = false;
 	let log      = "";
 
 	let h = this._h;
@@ -4335,21 +4331,21 @@ SpiderGL.WebGL.Shader.DEFAULT_AUTO_COMPILE = true;
 /**
  * Dummy shader unbinding.
  *
- * This function does nothing and it is provided only for simmetry with other wrappers.
+ * This function does nothing and it is provided only for symmetry with other wrappers.
  *
  * @param  {WebGLRenderingContext} gl A WebGLRenderingContext.
  */
 SpiderGL.WebGL.Shader.unbind = function (gl) { };
 
 SpiderGL.WebGL.Shader.prototype = {
-	_gl_deleteShader : function (shader) {
+	_gl_deleteShader : function () {
 		this._h = null;
 	},
 
 	_gl_isShader : function (shader) {
 	},
 
-	_gl_getShaderParameter : function (shader, pname) {
+	_gl_getShaderParameter : function (shader, pName) {
 	},
 
 	_gl_getShaderInfoLog : function (shader) {
@@ -4358,7 +4354,7 @@ SpiderGL.WebGL.Shader.prototype = {
 	_gl_getShaderSource : function (shader) {
 	},
 
-	_gl_compileShader : function (shader) {
+	_gl_compileShader : function () {
 		this._postCompile();
 	},
 
@@ -4500,7 +4496,7 @@ SpiderGL.WebGL.Shader.prototype = {
 
 	/**
 	 * Dummy bind method.
-	 * It is provided for simmetry with other WebGL object wrappers.
+	 * It is provided for symmetry with other WebGL object wrappers.
 	 *
 	 * @see unbind
 	 */
@@ -4509,7 +4505,7 @@ SpiderGL.WebGL.Shader.prototype = {
 
 	/**
 	 * Dummy unbind method.
-	 * It is provided for simmetry with other WebGL object wrappers.
+	 * It is provided for symmetry with other WebGL object wrappers.
 	 *
 	 * @see bind
 	 */
@@ -4556,7 +4552,7 @@ SpiderGL.WebGL.VertexShader.TARGET = WebGLRenderingContext.NONE;
 /**
  * Dummy vertex shader unbinding.
  *
- * This function does nothing and it is provided only for simmetry with other wrappers.
+ * This function does nothing and it is provided only for symmetry with other wrappers.
  *
  * @param  {WebGLRenderingContext} gl A WebGLRenderingContext.
  */
@@ -4603,7 +4599,7 @@ SpiderGL.WebGL.FragmentShader.TARGET = WebGLRenderingContext.NONE;
 /**
  * Dummy fragment shader unbinding.
  *
- * This function does nothing and it is provided only for simmetry with other wrappers.
+ * This function does nothing and it is provided only for symmetry with other wrappers.
  *
  * @param  {WebGLRenderingContext} gl A WebGLRenderingContext.
  */
@@ -4635,7 +4631,7 @@ SpiderGL.Type.extend(SpiderGL.WebGL.FragmentShader, SpiderGL.WebGL.Shader);
  * @param {number} [options.format=SpiderGL.WebGL.Texture.DEFAULT_FORMAT] The format parameter used for WebGLRenderingContext.texImage2D.
  * @param {number} [options.type=SpiderGL.WebGL.Texture.DEFAULT_TYPE] The type parameter used for WebGLRenderingContext.texImage2D.
  * @param {number} [options.magFilter=SpiderGL.WebGL.Texture.DEFAULT_MAG_FILTER] Texture magnification filter (see {@link SpiderGL.WebGL.Texture#magFilter}).
- * @param {number} [options.minFilter=SpiderGL.WebGL.Texture.DEFAULT_MIN_FILTER] Texture minnification filter (see {@link SpiderGL.WebGL.Texture#minFilter}).
+ * @param {number} [options.minFilter=SpiderGL.WebGL.Texture.DEFAULT_MIN_FILTER] Texture minification filter (see {@link SpiderGL.WebGL.Texture#minFilter}).
  * @param {number} [options.wrapS=SpiderGL.WebGL.Texture.DEFAULT_WRAP_S] Texture horizontal wrap mode (see {@link SpiderGL.WebGL.Texture#wrapS}).
  * @param {number} [options.wrapT=SpiderGL.WebGL.Texture.DEFAULT_WRAP_T] Texture vertical wrap mode (see {@link SpiderGL.WebGL.Texture#wrapT}).
  * @param {boolean} [options.autoMipmap=SpiderGL.WebGL.Texture.DEFAULT_AUTO_GENERATE_MIPMAP] If true, mipmaps are automatically generated when calling setImage or setSubImage (see {@link SpiderGL.WebGL.Texture#autoMipmap}).
@@ -4918,7 +4914,7 @@ SpiderGL.WebGL.Texture._faceBits[WebGLRenderingContext.TEXTURE_CUBE_MAP_POSITIVE
 SpiderGL.WebGL.Texture._faceBits[WebGLRenderingContext.TEXTURE_CUBE_MAP_NEGATIVE_Z] = SpiderGL.WebGL.Texture._FACE_NEGATIVE_Z_BIT;
 
 SpiderGL.WebGL.Texture.prototype = {
-	_gl_deleteTexture : function (texture) {
+	_gl_deleteTexture : function () {
 		this._h = null;
 	},
 
@@ -4928,10 +4924,10 @@ SpiderGL.WebGL.Texture.prototype = {
 	_gl_bindTexture : function (target, texture) {
 	},
 
-	_gl_getTexParameter : function (target, pname) {
+	_gl_getTexParameter : function (target, pName) {
 	},
 
-	_gl_copyTexImage2D : function (target, level, internalformat, x, y, width, height, border) {
+	_gl_copyTexImage2D : function (target, level, internalformat, x, y, width, height) {
 		if (level == 0) {
 			this._format = internalformat;
 			this._width  = width;
@@ -4963,21 +4959,21 @@ SpiderGL.WebGL.Texture.prototype = {
 		}
 	},
 
-	_gl_texParameterf : function (target, pname, param) {
-		this._setTexParameter(pname, param);
+	_gl_texParameterf : function (target, pName, param) {
+		this._setTexParameter(pName, param);
 	},
 
-	_gl_texParameteri : function (target, pname, param) {
-		this._setTexParameter(pname, param);
+	_gl_texParameteri : function (target, pName, param) {
+		this._setTexParameter(pName, param);
 	},
 
 	_gl_texSubImage2D : function (target) {
 	},
 
-	_setTexParameter : function (pname, param) {
+	_setTexParameter : function (pName, param) {
 		const gl = this._gl;
 
-		switch (pname) {
+		switch (pName) {
 			case gl.TEXTURE_MAG_FILTER : this._magFilter = param; break;
 			case gl.TEXTURE_MIN_FILTER : this._minFilter = param; break;
 			case gl.TEXTURE_WRAP_S     : this._wrapS     = param; break;
@@ -5026,7 +5022,6 @@ SpiderGL.WebGL.Texture.prototype = {
 		}
 
 		const gl  = this._gl;
-		const cb  = this._cb;
 		const dsa = this._dsa;
 
 		const t = target;
@@ -5207,8 +5202,8 @@ SpiderGL.WebGL.Texture.prototype = {
 	},
 
 	/**
-	 * Gets/Sets the colorspace conversionpolicy.
-	 * It specifies the image data colorpsce conversion policy when unpacking pixel data in setData or setSubData.
+	 * Gets/Sets the colorspace conversion policy.
+	 * It specifies the image data colorspace conversion policy when unpacking pixel data in setData or setSubData.
 	 * If set to SpiderGL.Core.DONT_CARE, the current WebGLRenderingContext setting will be used (i.e. nothing will be changed).
 	 * Otherwise, the specified value will be used and then restored after image data has been set.
 	 *
@@ -5280,7 +5275,7 @@ SpiderGL.WebGL.Texture.prototype = {
 	get magFilter() {
 		return this._magFilter;
 	},
-
+  // TODO fix filter and gl constants
 	set magFilter(f) {
 		f = SpiderGL.Utility.getDefaultValue(w, SpiderGL.WebGL.Texture.DEFAULT_MAG_FILTER);
 		this._dsa.texParameteri(this._h, this._t, gl.TEXTURE_MAG_FILTER, f);
@@ -5336,7 +5331,7 @@ SpiderGL.WebGL.Texture.prototype = {
 	 *
 	 * @param {object} sampler The sampling options.
 	 * @param {number} [sampler.magFilter] Texture magnification filter (see {@link SpiderGL.WebGL.Texture#magFilter}).
-	 * @param {number} [sampler.minFilter] Texture minnification filter (see {@link SpiderGL.WebGL.Texture#minFilter}).
+	 * @param {number} [sampler.minFilter] Texture minification filter (see {@link SpiderGL.WebGL.Texture#minFilter}).
 	 * @param {number} [sampler.wrapS] Texture horizontal wrap mode (see {@link SpiderGL.WebGL.Texture#wrapS}).
 	 * @param {number} [sampler.wrapT] Texture vertical wrap mode (see {@link SpiderGL.WebGL.Texture#wrapT}).
 	 */
@@ -5345,7 +5340,6 @@ SpiderGL.WebGL.Texture.prototype = {
 
 		const gl  = this._gl;
 		const cb  = this._cb;
-		const dsa = this._dsa;
 
 		const t = this._t;
 		const h = this._h;
@@ -5421,7 +5415,6 @@ SpiderGL.WebGL.Texture.prototype = {
 	 */
 	bind : function (unit) {
 		const gl  = this._gl;
-		const cb  = this._cb;
 		const dsa = this._dsa;
 		if (typeof unit == "undefined") {
 			gl.bindTexture(this._t, this._h);
@@ -5433,7 +5426,7 @@ SpiderGL.WebGL.Texture.prototype = {
 
 	/**
 	 * Binds "null" to the appropriate texture target for SpiderGL.WebGL.Texture2D and SpiderGL.WebGL.TextureCubeMap.
-	 * This method is provided only for simmetry with {@link bind} and is not relative to the object state.
+	 * This method is provided only for symmetry with {@link bind} and is not relative to the object state.
 	 *
 	 * @param {number} unit The unit (zero-based index) to which bind the null texture. If not specified, the current texture unit is used.
 	 *
@@ -5441,7 +5434,6 @@ SpiderGL.WebGL.Texture.prototype = {
 	 */
 	unbind : function (unit) {
 		const gl  = this._gl;
-		const cb  = this._cb;
 		const dsa = this._dsa;
 		if (typeof unit == "undefined") {
 			gl.bindTexture(this._t, null);
@@ -5489,8 +5481,14 @@ SpiderGL.WebGL.Texture2D = function (gl, options) {
 
 SpiderGL.WebGL.Texture2D.TARGET = WebGLRenderingContext.TEXTURE_2D;
 
+/**
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param unit
+ */
 SpiderGL.WebGL.Texture2D.unbind = function (gl, unit) {
-	const cb  = gl.getExtension("SGL_current_binding");
+  // TODO check webgl lib
+	gl.getExtension("SGL_current_binding");
 	const dsa = gl.getExtension("SGL_direct_state_access");
 	if (typeof unit == "undefined") {
 		gl.bindTexture(SpiderGL.WebGL.Texture2D.TARGET, null);
@@ -5613,8 +5611,14 @@ SpiderGL.WebGL.TextureCubeMap = function (gl, options) {
 
 SpiderGL.WebGL.TextureCubeMap.TARGET = WebGLRenderingContext.TEXTURE_CUBE_MAP;
 
+/**
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param unit
+ */
 SpiderGL.WebGL.TextureCubeMap.unbind = function (gl, unit) {
-	const cb  = gl.getExtension("SGL_current_binding");
+  // TODO check webgl lib
+	gl.getExtension("SGL_current_binding");
 	const dsa = gl.getExtension("SGL_direct_state_access");
 	if (typeof unit == "undefined") {
 		gl.bindTexture(SpiderGL.WebGL.TextureCubeMap.TARGET, null);
