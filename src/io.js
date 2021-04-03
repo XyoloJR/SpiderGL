@@ -94,8 +94,8 @@ SpiderGL.IO.Request.DEFAULT_SEND  = true;
 
 SpiderGL.IO.Request.prototype = {
 	_indexOf : function (handlers, h) {
-		for (var i=0, n=handlers.length; i<n; ++i) {
-			if (handlers[i] == h) {
+		for (let i=0, n=handlers.length; i<n; ++i) {
+			if (handlers[i] === h) {
 				return i;
 			}
 		}
@@ -103,22 +103,21 @@ SpiderGL.IO.Request.prototype = {
 	},
 
 	_setMainListener : function (eventName, eventHandler) {
-		var evt = this._events[eventName];
-		if (!evt) return;
-		if (evt.main == eventHandler) return;
+		const evt = this._events[eventName];
+		if (!evt || evt.main === eventHandler) return;
 		if (eventHandler) { this.addEventListener(eventName, eventHandler); }
 		else { this.removeEventListener(eventName, eventHandler); }
 		evt.main = eventHandler;
 	},
 
 	_dispatch : function () {
-		var name = arguments[0];
-		var evt  = this._events[name];
+		const name = arguments[0];
+		const evt  = this._events[name];
 		if (!evt) return;
-		var args = Array.prototype.slice.call(arguments, 1);
+		const args = Array.prototype.slice.call(arguments, 1);
 		args.push(this);
-		var lst  = evt.listeners;
-		for (var i=0, n=lst.length; i<n; ++i) {
+		const lst  = evt.listeners;
+		for (let i=0, n=lst.length; i<n; ++i) {
 			lst[i].apply(null, args);
 		}
 	},
@@ -217,19 +216,19 @@ SpiderGL.IO.Request.prototype = {
 	},
 
 	get ongoing() {
-		return (this._status == SpiderGL.IO.Request.ONGOING);
+		return (this._status === SpiderGL.IO.Request.ONGOING);
 	},
 
 	get cancelled() {
-		return (this._status == SpiderGL.IO.Request.CANCELLED);
+		return (this._status === SpiderGL.IO.Request.CANCELLED);
 	},
 
 	get failed() {
-		return (this._status == SpiderGL.IO.Request.FAILED);
+		return (this._status === SpiderGL.IO.Request.FAILED);
 	},
 
 	get succeeded() {
-		return (this._status == SpiderGL.IO.Request.SUCCEEDED);
+		return (this._status === SpiderGL.IO.Request.SUCCEEDED);
 	},
 
 	get finished() {
@@ -252,17 +251,17 @@ SpiderGL.IO.Request.prototype = {
 
 	addEventListener : function (eventName, eventHandler) {
 		if (!eventHandler) return;
-		var evt = this._events[eventName];
+		const evt = this._events[eventName];
 		if (!evt) return;
-		var idx = this._indexOf(evt.listeners, eventHandler);
+		const idx = this._indexOf(evt.listeners, eventHandler);
 		if (idx >= 0) return;
 		evt.listeners.push(eventHandler);
 	},
 
 	removeEventListener : function (eventName, eventHandler) {
-		var evt = this._events[eventName];
+		const evt = this._events[eventName];
 		if (!evt) return;
-		var idx = this._indexOf(evt.listeners, eventHandler);
+		const idx = this._indexOf(evt.listeners, eventHandler);
 		if (idx < 0) return;
 		evt.listeners.splice(idx, 1);
 	},
@@ -311,7 +310,7 @@ SpiderGL.IO.Request.prototype = {
 		if (!this.ongoing) { return false; }
 		this._status  = SpiderGL.IO.Request.CANCELLED;
 		this._aborted = true;
-		var r = this._doCancel();
+		const r = this._doCancel();
 		this._finishTime = SpiderGL.Utility.getTime();
 		return r;
 	},
@@ -324,12 +323,12 @@ SpiderGL.IO.Request.prototype = {
 		this._sent       = true;
 		this._finishTime = -1;
 		this._startTime  = SpiderGL.Utility.getTime();
-		var r = this._doSend();
+		const r = this._doSend();
 		if (!r) {
 			this._startTime = -1;
 			this._status = SpiderGL.IO.Request.NONE;
 			this._sent = false;
-		};
+		}
 		return r;
 	}
 };
@@ -349,17 +348,17 @@ SpiderGL.IO.XHRRequestBase = function (url, options) {
 	options = options || { };
 	SpiderGL.IO.Request.call(this, url, options);
 
-	var that = this;
+	const that = this;
 
-	var xhr = new XMLHttpRequest();
+	const xhr = new XMLHttpRequest();
 	this._xhr = xhr;
 
 	xhr.onprogress = function (evt) { that._xhrOnProgress(evt); };
 	xhr.onabort    = function ()    { that._doOnCancel(); that._doOnFinish(); };
 	xhr.onerror    = function ()    { that._doOnError();  that._doOnFinish(); };
 	xhr.onload     = function ()    {
-		var status = xhr.status;
-		if ((status === 0) || (status === 200) || (!!that._range && (status == 206))) {
+		const status = xhr.status;
+		if ((status === 0) || (status === 200) || (!!that._range && (status === 206))) {
 			that._doOnSuccess();
 		}
 		else {
@@ -374,13 +373,13 @@ SpiderGL.IO.XHRRequestBase = function (url, options) {
 
 	if ("range" in options) {
 		this._range = [ options.range[0], options.range[1] ];
-		var rangeStr = "bytes=" + options.range[0] + "-" + options.range[1];
+		const rangeStr = "bytes=" + options.range[0] + "-" + options.range[1];
 		xhr.setRequestHeader("Range", rangeStr);
 	}
 
 	this._prepareXHR();
 
-	var send = SpiderGL.Utility.getDefaultValue(options.send, SpiderGL.IO.Request.DEFAULT_SEND);
+	const send = SpiderGL.Utility.getDefaultValue(options.send, SpiderGL.IO.Request.DEFAULT_SEND);
 	if (send) {
 		this.send();
 	}
@@ -404,8 +403,8 @@ SpiderGL.IO.XHRRequestBase.prototype = {
 	},
 
 	_xhrOnProgress : function (evt) {
-		var loaded = 0;
-		var total  = 0;
+		let loaded = 0;
+		let total  = 0;
 		if (evt && evt.lengthComputable) {
 			loaded = evt.loaded;
 			total  = evt.total;
@@ -479,7 +478,7 @@ SpiderGL.Type.extend(SpiderGL.IO.TextRequest, SpiderGL.IO.XHRRequestBase);
  * @returns {string} The text content, or null on failure.
  */
 SpiderGL.IO.readText = function (url) {
-	var r = new SpiderGL.IO.TextRequest(url, {async:false});
+	const r = new SpiderGL.IO.TextRequest(url, {async:false});
 	return r.text;
 };
 
@@ -496,8 +495,7 @@ SpiderGL.IO.requestText = function (url, options) {
 	options = SpiderGL.Utility.getDefaultObject({ }, options);
 	options.async = true;
 	options.send  = true;
-	var r = new SpiderGL.IO.TextRequest(url, options);
-	return r;
+	return new SpiderGL.IO.TextRequest(url, options);
 };
 
 /**
@@ -538,7 +536,7 @@ SpiderGL.Type.extend(SpiderGL.IO.JSONRequest, SpiderGL.IO.XHRRequestBase);
  * @returns {object} The JSON-parsed object, or null on failure.
  */
 SpiderGL.IO.readJSON = function (url) {
-	var r = new SpiderGL.IO.JSONRequest(url, {async:false});
+	const r = new SpiderGL.IO.JSONRequest(url, {async:false});
 	return r.json;
 };
 
@@ -555,8 +553,7 @@ SpiderGL.IO.requestJSON = function (url, options) {
 	options = SpiderGL.Utility.getDefaultObject({ }, options);
 	options.async = true;
 	options.send  = true;
-	var r = new SpiderGL.IO.JSONRequest(url, options);
-	return r;
+	return new SpiderGL.IO.JSONRequest(url, options);
 };
 
 /**
@@ -574,8 +571,8 @@ SpiderGL.IO.BinaryRequest = function (url, options) {
 
 SpiderGL.IO.BinaryRequest.prototype = {
 	_prepareXHR : function () {
-		var xhr = this._xhr;
-		var overrideMime = false;
+		const xhr = this._xhr;
+		const overrideMime = false;
 
 		/*
 		if (xhr.hasOwnProperty("responseType")) {
@@ -599,18 +596,15 @@ SpiderGL.IO.BinaryRequest.prototype = {
 	},
 
 	_setArrayBuffer : function () {
-		var xhr = this._xhr;
+		const xhr = this._xhr;
 
-		if (xhr.responseType == "arraybuffer") {
+		if (xhr.responseType === "arraybuffer") {
 			this._data = xhr.response;
 		}
-		else if (xhr.mozResponseArrayBuffer != null) {
-			this._data = xhr.mozResponseArrayBuffer;
-		}
 		else if (xhr.responseText != null) {
-			var data = new String(xhr.responseText);
-			var arr  = new Array(data.length);
-			for (var i=0, n=data.length; i<n; ++i) {
+			const data = String(xhr.responseText);
+			const arr  = new Array(data.length);
+			for (let i=0, n=data.length; i<n; ++i) {
 				arr[i] = data.charCodeAt(i) & 0xff;
 			}
 			this._data = (new Uint8Array(arr)).buffer;
@@ -647,7 +641,7 @@ SpiderGL.Type.extend(SpiderGL.IO.BinaryRequest, SpiderGL.IO.XHRRequestBase);
  * @returns {ArrayBuffer} The content binary data, or null on failure.
  */
 SpiderGL.IO.readBinary = function (url) {
-	var r = new SpiderGL.IO.BinaryRequest(url, {async:false});
+	const r = new SpiderGL.IO.BinaryRequest(url, {async:false});
 	return r.buffer;
 };
 
@@ -664,8 +658,7 @@ SpiderGL.IO.requestBinary = function (url, options) {
 	options = SpiderGL.Utility.getDefaultObject({ }, options);
 	options.async = true;
 	options.send  = true;
-	var r = new SpiderGL.IO.BinaryRequest(url, options);
-	return r;
+	return new SpiderGL.IO.BinaryRequest(url, options);
 };
 
 /**
@@ -682,9 +675,9 @@ SpiderGL.IO.ImageRequest = function (url, options) {
 	options = options || { };
 	SpiderGL.IO.Request.call(this, url, options);
 
-	var that = this;
+	const that = this;
 
-	var img = new Image();
+	const img = new Image();
 	this._img  = img;
 	this._data = img;
 
@@ -696,7 +689,7 @@ SpiderGL.IO.ImageRequest = function (url, options) {
 		img.onprogress = function (evt) { that._imgOnProgress(evt); };
 	}
 
-	var send = SpiderGL.Utility.getDefaultValue(options.send, SpiderGL.IO.Request.DEFAULT_SEND);
+	const send = SpiderGL.Utility.getDefaultValue(options.send, SpiderGL.IO.Request.DEFAULT_SEND);
 	if (send) {
 		this.send();
 	}
@@ -719,8 +712,8 @@ SpiderGL.IO.ImageRequest.prototype = {
 	},
 
 	_imgOnProgress : function (evt) {
-		var loaded = 0;
-		var total  = 0;
+		let loaded = 0;
+		let total  = 0;
 		if (evt && evt.lengthComputable) {
 			loaded = evt.loaded;
 			total  = evt.total;
@@ -748,8 +741,7 @@ SpiderGL.IO.requestImage = function (url, options) {
 	options = SpiderGL.Utility.getDefaultObject({ }, options);
 	options.async = true;
 	options.send  = true;
-	var r = new SpiderGL.IO.ImageRequest(url, options);
-	return r;
+	return new SpiderGL.IO.ImageRequest(url, options);
 };
 
 /**
@@ -765,7 +757,7 @@ SpiderGL.IO.AggregateRequest = function (options) {
 	options = options || { };
 	SpiderGL.IO.Request.call(this, "*", options);
 
-	var that = this;
+	const that = this;
 
 	this._proxyOnProgress = function (loaded, total, req) {
 		that._reqOnProgress(loaded, total, req);
@@ -795,10 +787,10 @@ SpiderGL.IO.AggregateRequest = function (options) {
 	this._failedReqs    = 0;
 	this._succeededReqs = 0;
 	this._requests = [ ];
-	var requests = options.requests;
+	const requests = options.requests;
 	if (requests) {
-		for (var i=0, n=requests.length; i<n; ++i) {
-			var r = requests[i];
+		for (let i=0, n=requests.length; i<n; ++i) {
+			const r = requests[i];
 			if (r && !r.sent) {
 				this._installProxies(r);
 				this.addRequest(r);
@@ -806,7 +798,7 @@ SpiderGL.IO.AggregateRequest = function (options) {
 		}
 	}
 
-	var send = SpiderGL.Utility.getDefaultValue(options.send, SpiderGL.IO.Request.DEFAULT_SEND);
+	const send = SpiderGL.Utility.getDefaultValue(options.send, SpiderGL.IO.Request.DEFAULT_SEND);
 	if (send) {
 		this.send();
 	}
@@ -832,8 +824,8 @@ SpiderGL.IO.AggregateRequest.prototype = {
 	},
 
 	_doCancel : function () {
-		var requests = this._requests;
-		for (var i=0, n=requests.length; i<n; ++i) {
+		const requests = this._requests;
+		for (let i=0, n=requests.length; i<n; ++i) {
 			requests[i].cancel();
 		}
 		this._aggrFinishTime = SpiderGL.Utility.getTime();
@@ -841,14 +833,14 @@ SpiderGL.IO.AggregateRequest.prototype = {
 
 	_doSend : function () {
 		this._aggrStartTime = SpiderGL.Utility.getTime();
-		var requests = this._requests;
-		for (var i=0, n=requests.length; i<n; ++i) {
+		const requests = this._requests;
+		for (let i=0, n=requests.length; i<n; ++i) {
 			requests[i].send();
 		}
 	},
 
 	get _requestsFinished() {
-		return ((this._cancelledReqs + this._failedReqs + this._succeededReqs) == this._requests.length);
+		return ((this._cancelledReqs + this._failedReqs + this._succeededReqs) === this._requests.length);
 	},
 
 	_installProxies : function (req) {
@@ -868,7 +860,7 @@ SpiderGL.IO.AggregateRequest.prototype = {
 	},
 
 	_reqOnProgress : function (loaded, total, req) {
-		var idx = this._indexOf(this._requests, req);
+		const idx = this._indexOf(this._requests, req);
 		if (idx < 0) return;
 		this._eventReq = req;
 		this._doOnProgress(loaded, total);
@@ -876,14 +868,14 @@ SpiderGL.IO.AggregateRequest.prototype = {
 	},
 
 	_reqOnCancel : function (req) {
-		var idx = this._indexOf(this._requests, req);
+		const idx = this._indexOf(this._requests, req);
 		if (idx < 0) return;
 		this._eventReq = req;
 		//this._doOnCancel();
 		this._cancelledReqs++;
 		if (this._requestsFinished) {
 			this._aggrFinishTime = SpiderGL.Utility.getTime();
-			if (this._cancelledReqs == this._requests.length) {
+			if (this._cancelledReqs === this._requests.length) {
 				this._eventReq = this;
 				this._doOnCancel();
 			}
@@ -894,7 +886,7 @@ SpiderGL.IO.AggregateRequest.prototype = {
 	},
 
 	_reqOnError : function (req) {
-		var idx = this._indexOf(this._requests, req);
+		const idx = this._indexOf(this._requests, req);
 		if (idx < 0) return;
 		this._eventReq = req;
 		//this._doOnError();
@@ -908,7 +900,7 @@ SpiderGL.IO.AggregateRequest.prototype = {
 	},
 
 	_reqOnSuccess : function (req) {
-		var idx = this._indexOf(this._requests, req);
+		const idx = this._indexOf(this._requests, req);
 		if (idx < 0) return;
 		this._eventReq = req;
 		//this._doOnSuccess();
@@ -927,7 +919,7 @@ SpiderGL.IO.AggregateRequest.prototype = {
 	},
 
 	_reqOnFinish : function (req) {
-		var idx = this._indexOf(this._requests, req);
+		const idx = this._indexOf(this._requests, req);
 		if (idx < 0) return;
 		this._uninstallProxies(req);
 		this._eventReq = req;
@@ -967,14 +959,14 @@ SpiderGL.IO.AggregateRequest.prototype = {
 
 	addRequest : function (r) {
 		if (!r || this._sent) return;
-		var idx = this._indexOf(this._requests, r);
+		const idx = this._indexOf(this._requests, r);
 		if (idx >= 0) return;
 		this._requests.push(r);
 	},
 
 	removeRequest : function (r) {
 		if (!r || this._sent) return;
-		var idx = this._indexOf(this._requests, r);
+		const idx = this._indexOf(this._requests, r);
 		if (idx < 0) return;
 		this._requests.splice(idx, 1);
 	}
