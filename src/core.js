@@ -89,7 +89,7 @@ SpiderGL.Core.EMPTY_OBJECT = { };
  * Alias for [ ].
  *
  * @constant
- * @type array
+ * @type any[]
 */
 SpiderGL.Core.EMPTY_ARRAY = [ ];
 

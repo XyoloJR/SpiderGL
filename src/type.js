@@ -42,14 +42,14 @@ SpiderGL.Type = { };
  * It is true if the host system is little endian, false otherwise.
  *
  * @constant
- * @type bool
+ * @type boolean
  *
  * @see SpiderGL.Type.BIG_ENDIAN
  */
 SpiderGL.Type.LITTLE_ENDIAN = (function(){
-	var a = new Uint8Array([0x12, 0x34]);
-	var b = new Uint16Array(a.buffer);
-	return (b[0] == 0x3412);
+	const a = new Uint8Array([0x12, 0x34]);
+	const b = new Uint16Array(a.buffer);
+	return (b[0] === 0x3412);
 })();
 
 /**
@@ -57,11 +57,11 @@ SpiderGL.Type.LITTLE_ENDIAN = (function(){
  * It is true if the host system is big endian, false otherwise.
  *
  * @constant
- * @type bool
+ * @type boolean
  *
  * @see SpiderGL.Type.LITTLE_ENDIAN
  */
-SpiderGL.Type.BIG_ENDIAN = !SpiderGL.Type.BIG_ENDIAN;
+SpiderGL.Type.BIG_ENDIAN = !SpiderGL.Type.LITTLE_ENDIAN;
 
 /**
  * Constant for undefined (void) type.
@@ -189,7 +189,7 @@ SpiderGL.Type.SIZEOF_FLOAT32 = Float32Array.BYTES_PER_ELEMENT;
  * @constant
  * @type number
  */
-//var SpiderGL.Type.SIZEOF_FLOAT64 = Float64Array.BYTES_PER_ELEMENT;
+//const SpiderGL.Type.SIZEOF_FLOAT64 = Float64Array.BYTES_PER_ELEMENT;
 
 /**
  * Returns the size of the type expressed by the passed symbolic constant.
@@ -198,7 +198,7 @@ SpiderGL.Type.SIZEOF_FLOAT32 = Float32Array.BYTES_PER_ELEMENT;
  * @return {number} The size in bytes of the type.
  */
 SpiderGL.Type.typeSize = (function(){
-	var typeMap = { };
+	const typeMap = { };
 	typeMap[SpiderGL.Type.NO_TYPE] = 0;
 	typeMap[SpiderGL.Type.INT8   ] = SpiderGL.Type.SIZEOF_INT8;
 	typeMap[SpiderGL.Type.UINT8  ] = SpiderGL.Type.SIZEOF_UINT8;
@@ -220,7 +220,7 @@ SpiderGL.Type.typeSize = (function(){
  * @return {number} The corresponding WebGLRenderingContext type constant, i.e. WebGLRenderingContext.UNSIGNED_BYTE.
  */
 SpiderGL.Type.typeToGL = (function(){
-	var typeMap = { };
+	const typeMap = { };
 	typeMap[SpiderGL.Type.NO_TYPE] = WebGLRenderingContext.NONE;
 	typeMap[SpiderGL.Type.INT8   ] = WebGLRenderingContext.BYTE;
 	typeMap[SpiderGL.Type.UINT8  ] = WebGLRenderingContext.UNSIGNED_BYTE;
@@ -242,7 +242,7 @@ SpiderGL.Type.typeToGL = (function(){
  * @return {number} The corresponding SpiderGL type constant, i.e. SpiderGL.Type.UINT8.
  */
 SpiderGL.Type.typeFromGL = (function(){
-	var typeMap = { };
+	const typeMap = { };
 	typeMap[WebGLRenderingContext.NONE          ] = SpiderGL.Type.NO_TYPE;
 	typeMap[WebGLRenderingContext.BYTE          ] = SpiderGL.Type.INT8;
 	typeMap[WebGLRenderingContext.UNSIGNED_BYTE ] = SpiderGL.Type.UINT8;
@@ -263,7 +263,7 @@ SpiderGL.Type.typeFromGL = (function(){
  * @return {number} The size in bytes of the type.
  */
 SpiderGL.Type.typeSizeFromGL = function (glType) {
-	var sglType = SpiderGL.Type.typeFromGL(glType);
+	const sglType = SpiderGL.Type.typeFromGL(glType);
 	return SpiderGL.Type.typeSize(sglType);
 };
 
@@ -275,7 +275,7 @@ SpiderGL.Type.typeSizeFromGL = function (glType) {
  * @return {function} The corresponding TypedArray constructor function, i.e. Uint8Array.
  */
 SpiderGL.Type.typeToTypedArrayConstructor = (function(){
-	var typeMap = { };
+	const typeMap = { };
 	typeMap[SpiderGL.Type.NO_TYPE] = ArrayBuffer;
 	typeMap[SpiderGL.Type.INT8   ] = Int8Array;
 	typeMap[SpiderGL.Type.UINT8  ] = Uint8Array;
@@ -298,7 +298,7 @@ SpiderGL.Type.TRIANGLE_FAN   = 5;
 SpiderGL.Type.TRIANGLE_STRIP = 6;
 
 SpiderGL.Type.primitiveToGL = (function(){
-	var enumMap = { };
+	const enumMap = { };
 	enumMap[SpiderGL.Type.POINTS        ] = WebGLRenderingContext.POINTS;
 	enumMap[SpiderGL.Type.LINES         ] = WebGLRenderingContext.LINES;
 	enumMap[SpiderGL.Type.LINE_LOOP     ] = WebGLRenderingContext.LINE_LOOP;
@@ -318,7 +318,7 @@ SpiderGL.Type.primitiveToGL = (function(){
  *
  * @param {any} arg The object to check.
  * @param {constructor} ctor The class (i.e. the function constructor) that is tested for creating the object.
- * @return {bool} True if arg is an instance of ctor, false otherwise.
+ * @return {boolean} True if arg is an instance of ctor, false otherwise.
  */
 SpiderGL.Type.instanceOf = function (arg, ctor) {
 	return (arg instanceof ctor);
@@ -328,7 +328,7 @@ SpiderGL.Type.instanceOf = function (arg, ctor) {
  * Tests whether the argument is a number.
  *
  * @param {any} arg The object to check.
- * @return {bool} True if arg is a number, false otherwise.
+ * @return {boolean} True if arg is a number, false otherwise.
  */
 SpiderGL.Type.isNumber = function (arg) {
 	return (typeof arg == "number");
@@ -338,7 +338,7 @@ SpiderGL.Type.isNumber = function (arg) {
  * Tests whether the argument is a string.
  *
  * @param {any} arg The object to check.
- * @return {bool} True if arg is a string, false otherwise.
+ * @return {boolean} True if arg is a string, false otherwise.
  */
 SpiderGL.Type.isString = function (arg) {
 	return (typeof arg == "string");
@@ -348,7 +348,7 @@ SpiderGL.Type.isString = function (arg) {
  * Tests whether the argument is a function.
  *
  * @param {any} arg The object to check.
- * @return {bool} True if arg is a function, false otherwise.
+ * @return {boolean} True if arg is a function, false otherwise.
  */
 SpiderGL.Type.isFunction = function (arg) {
 	return (typeof arg == "function");
@@ -358,7 +358,7 @@ SpiderGL.Type.isFunction = function (arg) {
  * Tests whether the argument is an array.
  *
  * @param {any} arg The object to check.
- * @return {bool} True if arg is an array, false otherwise.
+ * @return {boolean} True if arg is an array, false otherwise.
  */
 SpiderGL.Type.isArray = function (arg) {
 	return (arg && arg.constructor === Array);
@@ -368,7 +368,7 @@ SpiderGL.Type.isArray = function (arg) {
  * Tests whether the argument is a typed array.
  *
  * @param {any} arg The object to check.
- * @return {bool} True if arg is a typed array, false otherwise.
+ * @return {boolean} True if arg is a typed array, false otherwise.
  */
 SpiderGL.Type.isTypedArray = function (arg) {
 	return (arg && (typeof arg.buffer != "undefined") && (arg.buffer instanceof ArrayBuffer));
@@ -377,12 +377,13 @@ SpiderGL.Type.isTypedArray = function (arg) {
 /**
  * Implements inheritance.
  *
- * A class derivation is established between derived and base. The derived object can be successfully tested as being a base instance and inherits base properties and methods.
+ * A class derivation is established between derived and base.
+ * The derived object can be successfully tested as being a base instance and inherits base properties and methods.
  * It is possible to override base properties and methods by redefining them.
  * This function must be called after assigning the derived prototype object.
  *
- * @param {constructor} derived The derived class.
- * @param {constructor} base The base class.
+ * @param {Function} derived The derived class.
+ * @param {Function} base The base class.
  *
  * @example
  * function Base(x, y) {
@@ -405,39 +406,22 @@ SpiderGL.Type.isTypedArray = function (arg) {
  *   alertZ : function () { alert("Derived Z: " + this.z); },
  * };
  *
- * SpiderGL.Type.extend(base, derived);
+ * SpiderGL.Type.extend(derived, base);
  *
- * var b = new Base(1, 2);
+ * const b = new Base(1, 2);
  * b.alertX(); // alerts "Base X: 1"
  * b.alertY(); // alerts "Base Y: 2"
  *
- * var d = new Base(3, 4, 5);
+ * const d = new Derived(3, 4, 5);
  * d.alertX(); // alerts "Base X: 3"     (base method is kept)
  * d.alertY(); // alerts "Derived Y: 4"  (base method is overridden)
- * d.alertZ(); // alerts "Derived Y: 5"  (new derived method is called)
+ * d.alertZ(); // alerts "Derived Z: 5"  (new derived method is called)
  */
 SpiderGL.Type.extend = function(derived, base /*, installBaseInfo*/) {
-	function inheritance() { }
-	inheritance.prototype = base.prototype;
-
-	var dproto = derived.prototype;
-	var iproto = new inheritance();
-	iproto.constructor = derived;
-
-	var getter = null;
-	var setter = null;
-	for (var p in dproto) {
-		getter = dproto.__lookupGetter__(p);
-		if (getter) { iproto.__defineGetter__(p, getter); }
-
-		setter = dproto.__lookupSetter__(p);
-		if (setter) { iproto.__defineSetter__(p, setter); }
-
-		if (!getter && !setter) { iproto[p] = dproto[p]; }
-	}
-
-	derived.prototype = iproto;
-
+  derived.prototype = Object.create(
+      base.prototype,
+      Object.getOwnPropertyDescriptors(derived.prototype)
+  )
 	/*
 	if (installBaseInfo) {
 		derived.superConstructor = base;
@@ -447,18 +431,18 @@ SpiderGL.Type.extend = function(derived, base /*, installBaseInfo*/) {
 }
 
 SpiderGL.Type.defineClassGetter = function(ctor, name, func) {
-	ctor.prototype.__defineGetter__(name, func);
+  Object.defineProperty(ctor.prototype, name, { get: func})
 }
 
 SpiderGL.Type.defineClassSetter = function(ctor, name, func) {
-	ctor.prototype.__defineSetter__(name, func);
+  Object.defineProperty(ctor.prototype, name, { set: func})
 }
 
 SpiderGL.Type.defineObjectGetter = function(obj, name, func) {
-	obj.__defineGetter__(name, func);
+  Object.defineProperty(obj, name, { get: func})
 }
 
 SpiderGL.Type.defineObjectSetter = function(obj, name, func) {
-	obj.__defineSetter__(name, func);
+  Object.defineProperty(obj, name, { set: func})
 }
 
