@@ -46,9 +46,9 @@ SpiderGL.Utility = { };
  * @returns {any} Returns arg if arg is not undefined and is not {@link SpiderGL.Core.DEFAULT}, otherwise returns defaultValue.
  *
  * @example
- * var DEFAULT_V = 1;
+ * const DEFAULT_V = 1;
  *
- * var v = null;
+ * let v = null;
  * v = SpiderGL.Utility.getDefaultValue(someVar, DEFAULT_V); // someVar is undefined, so v = DEFAULT_V
  *
  * var someVar = 2;
@@ -92,14 +92,14 @@ SpiderGL.Utility.getDefaultValue = function (arg, defaultValue) {
  */
 SpiderGL.Utility.getDefaultObject = function (defaultObj, obj) {
 	if (obj) {
-		var sDefault = SpiderGL.Core.DEFAULT;
+		const sDefault = SpiderGL.Core.DEFAULT;
 		//var getter = null;
-		for (var p in obj) {
+		for (const p in obj) {
 			/* getter = obj.__lookupGetter__(p);
 			if (getter) {
 				defaultObj.__defineGetter__(p, getter);
 			}
-			else */ if (obj[p] != sDefault) {
+			else */ if (obj[p] !== sDefault) {
 				defaultObj[p] = obj[p];
 			}
 		}
@@ -118,15 +118,15 @@ SpiderGL.Utility.getDefaultObject = function (defaultObj, obj) {
 SpiderGL.Utility.setDefaultValues = function (defaultObj, obj) {
 	if (!obj) return defaultObj;
 
-	var sDefault = SpiderGL.Core.DEFAULT;
-	for (var p in obj) {
-		if (obj[p] == sDefault) {
+	const sDefault = SpiderGL.Core.DEFAULT;
+	for (const p in obj) {
+		if (obj[p] === sDefault) {
 			if (typeof defaultObj[p] != "undefined") {
 				obj[p] = defaultObj[p];
 			}
 		}
 	}
-	for (var p in defaultObj) {
+	for (const p in defaultObj) {
 		if (typeof obj[p] == "undefined") {
 			obj[p] = defaultObj[p];
 		}
@@ -138,7 +138,7 @@ SpiderGL.Utility.setDefaultValues = function (defaultObj, obj) {
  * Converts the input arguments to a 4-component Float32Array.
  * The input value is handled like WebGL handles constant vertex attributes,
  * that is, if the input parameter is null, a number, or an array with less than four components,
- * missing values are taken from the array [0, 0, 0, 1] at the respective position. 
+ * missing values are taken from the array [0, 0, 0, 1] at the respective position.
  *
  * @param {null|undefined|number|array|Float32Array} x The input value.
  *
@@ -161,10 +161,10 @@ SpiderGL.Utility.getAttrib4fv = function (x) {
 	if (SpiderGL.Type.isNumber(x)) return [x, 0, 0, 1];
 	if (!x) return [0, 0, 0, 1];
 	return [
-		(x[0] != undefined) ? x[0] : 0,
-		(x[1] != undefined) ? x[1] : 0,
-		(x[2] != undefined) ? x[2] : 0,
-		(x[3] != undefined) ? x[3] : 1
+		(x[0] !== undefined) ? x[0] : 0,
+		(x[1] !== undefined) ? x[1] : 0,
+		(x[2] !== undefined) ? x[2] : 0,
+		(x[3] !== undefined) ? x[3] : 1
 	];
 }
 
@@ -200,7 +200,7 @@ SpiderGL.Utility.Timer.prototype = {
 	},
 
 	restart : function () {
-		var r = this.elapsed;
+		const r = this.elapsed;
 		this._tStart   = this.now;
 		this._tElapsed = 0;
 		return r;
@@ -231,7 +231,7 @@ SpiderGL.Utility.Timer.prototype = {
 	},
 
 	get isPaused() {
-		return (this._tStart == -2);
+		return (this._tStart === -2);
 	},
 
 	get elapsed() {
