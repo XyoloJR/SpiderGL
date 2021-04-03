@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @namespace The SpiderGL namespace.
  */
-var SpiderGL = { };
+const SpiderGL = { };
 
 /**
  * Utility tag for any use.
@@ -63,17 +63,17 @@ SpiderGL.openNamespace = function (options) {
 		classPrefix    : SpiderGL.openNamespace.DEFAULT_CLASS_PREFIX
 	}, options);
 
-	var constantRegExp = new RegExp("^(([_\$0-9A-Z])+)$");
+	const constantRegExp = new RegExp("^(([_\$0-9A-Z])+)$");
 	function isConstant(name) {
 		return constantRegExp.test(name);
 	}
 
-	var namespaceOrClassRegExp = new RegExp("^([A-Z])");
+	const namespaceOrClassRegExp = new RegExp("^([A-Z])");
 	function isNamespaceOrClass(name) {
 		return (namespaceOrClassRegExp.test(name) && !isConstant(name));
 	}
 
-	var functionRegExp = new RegExp("^(([a-z])+([_\$0-9A-Za-z])*)$");
+	const functionRegExp = new RegExp("^(([a-z])+([_\$0-9A-Za-z])*)$");
 	function isFunction(name) {
 		return functionRegExp.test(name);
 	}
@@ -82,15 +82,15 @@ SpiderGL.openNamespace = function (options) {
 		return (name.substr(0, 1).toUpperCase() + name.substr(1));
 	}
 
-	var classes    = { };
-	var functions  = { };
-	var constants  = { };
+	const classes    = { };
+	const functions  = { };
+	const constants  = { };
 
 	function collect(module) {
 		if (!module) return;
-		for (var x in module) {
-			if (x.substr(0, 1) == "_") continue;
-			var y = module[x];
+		for (const x in module) {
+			if (x.substr(0, 1) === "_") continue;
+			const y = module[x];
 			if (isNamespaceOrClass(x)) {
 				//if (classes[x]) log("Duplicate: " + x);
 				classes[x] = y;
@@ -109,7 +109,7 @@ SpiderGL.openNamespace = function (options) {
 		}
 	}
 
-	var modules = [
+	const modules = [
 		"Core",
 		"DOM",
 		"IO",
@@ -125,24 +125,24 @@ SpiderGL.openNamespace = function (options) {
 		"WebGL"
 	];
 
-	for (var x in modules) {
+	for (const x in modules) {
 		collect(SpiderGL[modules[x]]);
 	}
 
-	for (var x in classes) {
-		var name = options.classPrefix + initialCap(x);
+	for (const x in classes) {
+		const name = options.classPrefix + initialCap(x);
 		//log("CLASS    : " + name);
 		options.globalObject[name] = classes[x];
 	}
 
-	for (var x in functions) {
-		var name = options.functionPrefix + initialCap(x);
+	for (const x in functions) {
+		const name = options.functionPrefix + initialCap(x);
 		//log("FUNCTION : " + name);
 		options.globalObject[name] = functions[x];
 	}
 
-	for (var x in constants) {
-		var name = options.constantPrefix + initialCap(x);
+	for (const x in constants) {
+		const name = options.constantPrefix + initialCap(x);
 		//log("CONSTANT : " + name);
 		options.globalObject[name] = constants[x];
 	}
@@ -151,7 +151,7 @@ SpiderGL.openNamespace = function (options) {
 /**
  * Default publishing global object.
  *
- * @type object
+ * @type Window
  *
  * @default window
  */
@@ -183,3 +183,6 @@ SpiderGL.openNamespace.DEFAULT_FUNCTION_PREFIX = "sgl";
  * @default "Sgl"
  */
 SpiderGL.openNamespace.DEFAULT_CLASS_PREFIX = "Sgl";
+
+
+export default SpiderGL
